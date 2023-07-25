@@ -33,15 +33,15 @@ void LevelManager::HandleSignalEvent(Signal::EventData eventData)
 {
     switch (eventData.event)
     {
-    case Signal::Event::ACTIVATING_TOWER:
+    case Signal::Event::ACTIVATING_PLATFORM:
         // Get platform in eventData.position and set it isSelectingTower to true
         // Then set previous platform to false
         static Vector2 prevPlatformPos {eventData.position};
 
-        level.GetObj<Platform>(eventData.position)->Activating();
+        level.GetObj<Platform>(eventData.position)->Activate();
         if (!Tile::CollisionInTile(prevPlatformPos, eventData.position))
         {
-            level.GetObj<Platform>(prevPlatformPos)->Deactive();
+            level.GetObj<Platform>(prevPlatformPos)->Deactivate();
         }
 
         prevPlatformPos = eventData.position;

@@ -35,7 +35,7 @@ public:
                 Rectangle sidePanel {(MAP_SIZE.x - width), 0, (TILE_SIZE * width), SCREEN_HEIGHT};
                 tower->StatusPanel();
                 Rectangle closeButton {(sidePanel.x + 2) * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE};
-                if (GuiButton(closeButton, "Close")) Deactive();
+                if (GuiButton(closeButton, "Close")) Deactivate();
             }
             else DrawSelectTowerPanel();
         }
@@ -58,7 +58,7 @@ public:
 
         towerPanel.Draw();
         Rectangle closeButton {(sidePanel.x + 2) * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE};
-        if (GuiButton(closeButton, "Close")) Deactive();
+        if (GuiButton(closeButton, "Close")) Deactivate();
 
         // DrawText(TextFormat("Coins: %i", towerPrice), tower.data.position.x * TILE_SIZE, ((tower.data.position.y + 1) * TILE_SIZE), 20, BLACK);
 
@@ -68,15 +68,15 @@ public:
         }
     };
 
-    void Activating() { isActive = true; };
-    void Deactive() { isActive = false; };
+    void Activate() { isActive = true; };
+    void Deactivate() { isActive = false; };
 
     void SelectTower()
     {
         // Send signal to levelManager {Event::SELECTING_TOWER, this platform position}
         // levelManager then search platform in EventData.position and turn `isActive` true and other platform false
         // then in Draw() if (isActive) DrawSelectTowerPanel()
-        if (Tile::ClickTile(data.position)) signal.Notify({Signal::Event::ACTIVATING_TOWER, data.position});
+        if (Tile::ClickTile(data.position)) signal.Notify({Signal::Event::ACTIVATING_PLATFORM, data.position});
     };
 
     void Update()

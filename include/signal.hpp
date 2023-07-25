@@ -12,7 +12,7 @@ namespace Signal
     enum class Event
     {
         REMOVE,
-        ACTIVATING_TOWER,
+        ACTIVATING_PLATFORM,
     };
 
     struct EventData
