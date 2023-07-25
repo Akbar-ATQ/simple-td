@@ -58,6 +58,16 @@ Vector2 Tile::Position(const Vector2 v)
     return {(v.x / TILE_SIZE), (v.y / TILE_SIZE)};
 };
 
+Vector2 Tile::RealPosition(const Vector2 v)
+{
+    return {(v.x * TILE_SIZE), (v.y * TILE_SIZE)};
+};
+
+float Tile::RealPosition(const float pos)
+{
+    return pos * TILE_SIZE;
+};
+
 bool Tile::ClickTile(const Vector2 tilePos)
 {
     return (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CollisionInTile(Position(GetMousePosition()), tilePos));

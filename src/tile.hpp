@@ -3,6 +3,8 @@
 
 #include "raylib.h"
 
+#include <string>
+
 // ---------- Handle tile related task/calculation ---------- //
 namespace Tile
 {
@@ -13,6 +15,9 @@ namespace Tile
     void DrawCircLines(const Vector2 v, const float radius, const Color color);
 
     Vector2 Position(const Vector2 v);
+    Vector2 RealPosition(const Vector2 v);
+    float RealPosition(const float pos);
+
     bool ClickTile(const Vector2 tilePos);
     bool CollisionInTile(const Vector2 v1, const Vector2 v2);
     bool CollisionCircleRec(const Vector2 circleCenter, float circleRadius, const Rectangle rectangle);

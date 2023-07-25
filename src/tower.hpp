@@ -1,7 +1,6 @@
 #ifndef TOWER_HPP
 #define TOWER_HPP
 
-// #include "enemy.h"
 #include "entity_data.hpp"
 #include "global_data.hpp"
 
@@ -12,7 +11,7 @@
 class Tower
 {
 public:
-    Tower(float x, float y, Color color) : data{{x, y}, color} {};
+    Tower(Vector2 pos) : data{pos, GREEN} {};
     ~Tower() = default;
 
     struct Data : public EntityData
@@ -50,6 +49,21 @@ public:
     int GetBullets() { return m_bullets.size(); };
 
     void Upgrade();
+
+    void StatusPanel()
+    {
+        float width {3.0f};
+        Rectangle sidePanel {(MAP_SIZE.x - width), 0, (TILE_SIZE * width), SCREEN_HEIGHT};
+
+        Tile::DrawRec(sidePanel, BROWN);
+
+        DrawText(TextFormat("Damage: %.3f", data.bulletDamage),
+            Tile::RealPosition(sidePanel.x),
+            Tile::RealPosition(sidePanel.y + 2),
+            14,
+            BLACK
+        );
+    };
 
 private:
     struct Bullet {

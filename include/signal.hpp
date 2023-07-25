@@ -12,8 +12,7 @@ namespace Signal
     enum class Event
     {
         REMOVE,
-        ADD_TOWER,
-        SELECTING_TOWER,
+        ACTIVATING_TOWER,
     };
 
     struct EventData

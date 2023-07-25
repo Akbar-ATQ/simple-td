@@ -2,7 +2,6 @@
 #define LEVELMANAGER_HPP
 
 #include "platform.hpp"
-#include "tower.hpp"
 #include "entity_data.hpp"
 #include "global_data.hpp"
 #include "tile.hpp"
@@ -74,8 +73,6 @@ private:
         std::shared_ptr<T> GetObj(Vector2 v ){ return std::get<std::shared_ptr<T>>(map[v.x][v.y].obj); };
     };
     Level level;
-
-    std::vector<Tower> towerList;
 
     std::shared_ptr<Signal::Listener> listener = std::make_shared<Signal::Listener>();
 };

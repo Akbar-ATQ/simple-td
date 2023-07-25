@@ -33,18 +33,15 @@ void LevelManager::HandleSignalEvent(Signal::EventData eventData)
 {
     switch (eventData.event)
     {
-    case Signal::Event::ADD_TOWER:
-        towerList.push_back({eventData.position.x, eventData.position.y, GREEN});
-        break;
-    case Signal::Event::SELECTING_TOWER:
+    case Signal::Event::ACTIVATING_TOWER:
         // Get platform in eventData.position and set it isSelectingTower to true
         // Then set previous platform to false
         static Vector2 prevPlatformPos {eventData.position};
 
-        level.GetObj<Platform>(eventData.position)->isSelectingTower = true;
+        level.GetObj<Platform>(eventData.position)->Activating();
         if (!Tile::CollisionInTile(prevPlatformPos, eventData.position))
         {
-            level.GetObj<Platform>(prevPlatformPos)->isSelectingTower = false;
+            level.GetObj<Platform>(prevPlatformPos)->Deactive();
         }
 
         prevPlatformPos = eventData.position;
@@ -76,9 +73,5 @@ void LevelManager::Draw()
             if (level.map[x][y].item == Item::BASE) level.GetObj<Base>(x, y)->Draw();
             if (level.map[x][y].item == Item::SPAWN_POINT) level.GetObj<SpawnPoint>(x, y)->Draw();
         }
-    }
-    for (auto& tower : towerList)
-    {
-        tower.Draw();
     }
 };
