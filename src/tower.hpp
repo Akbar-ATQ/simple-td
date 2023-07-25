@@ -3,6 +3,7 @@
 
 #include "entity_data.hpp"
 #include "global_data.hpp"
+#include "ui.hpp"
 
 #include "raylib.h"
 
@@ -50,19 +51,19 @@ public:
 
     void Upgrade();
 
-    void StatusPanel()
+    void DrawStat(std::string text, float stat)
     {
-        float width {3.0f};
-        Rectangle sidePanel {(MAP_SIZE.x - width), 0, (TILE_SIZE * width), SCREEN_HEIGHT};
-
-        Tile::DrawRec(sidePanel, BROWN);
-
-        DrawText(TextFormat("Damage: %.3f", data.bulletDamage),
-            Tile::RealPosition(sidePanel.x),
-            Tile::RealPosition(sidePanel.y + 2),
+        DrawText(TextFormat("%s: %.3f", text.c_str(), stat),
+            Tile::RealPosition(UI::sidePanel.x),
+            Tile::RealPosition(UI::sidePanel.y + 2),
             14,
             BLACK
         );
+    }
+    void StatusPanel()
+    {
+        UI::SidePanel();
+        DrawStat("Damage", data.bulletDamage);
     };
 
 private:

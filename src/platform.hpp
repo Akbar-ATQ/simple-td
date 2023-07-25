@@ -5,11 +5,11 @@
 #include "tile.hpp"
 #include "entity_data.hpp"
 #include "tower.hpp"
+#include "ui.hpp"
 
 #include "signal.hpp"
 
 #include "raylib.h"
-#include "raygui.h"
 
 #include <vector>
 #include <memory>
@@ -31,11 +31,8 @@ public:
         {
             if (tower)
             {
-                float width {3.0f};
-                Rectangle sidePanel {(MAP_SIZE.x - width), 0, (TILE_SIZE * width), SCREEN_HEIGHT};
                 tower->StatusPanel();
-                Rectangle closeButton {(sidePanel.x + 2) * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE};
-                if (GuiButton(closeButton, "Close")) Deactivate();
+                UI::CloseSidePanelButton(isActive);
             }
             else DrawSelectTowerPanel();
         }
@@ -48,17 +45,13 @@ public:
 
     void DrawSelectTowerPanel()
     {
-        float width {3.0f};
-        Rectangle sidePanel {(MAP_SIZE.x - width), 0, (TILE_SIZE * width), SCREEN_HEIGHT};
+        UI::SidePanel();
 
-        Tile::DrawRec(sidePanel, BROWN);
-
-        Tower towerPanel {Vector2{(MAP_SIZE.x - (width - 1)), 2}};
+        static Tower towerPanel {Vector2{(MAP_SIZE.x - (UI::sidePanelWidth - 1)), 2}};
         // int towerPrice {10};
 
         towerPanel.Draw();
-        Rectangle closeButton {(sidePanel.x + 2) * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE};
-        if (GuiButton(closeButton, "Close")) Deactivate();
+        UI::CloseSidePanelButton(isActive);
 
         // DrawText(TextFormat("Coins: %i", towerPrice), tower.data.position.x * TILE_SIZE, ((tower.data.position.y + 1) * TILE_SIZE), 20, BLACK);
 
