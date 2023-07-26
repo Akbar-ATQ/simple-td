@@ -8,6 +8,7 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/main.cpp
   ${CMAKE_SOURCE_DIR}/src/tile.cpp
   ${CMAKE_SOURCE_DIR}/src/level_manager.cpp
+  ${CMAKE_SOURCE_DIR}/src/path_finding.cpp
 )
 
 add_executable(main ${SOURCES})
@@ -18,6 +19,6 @@ target_include_directories(main PUBLIC
     ${PROJECT_SOURCE_DIR}/src
 )
 
-target_link_libraries(main ${CMAKE_SOURCE_DIR}/lib/libraylib.a winmm opengl32)
+target_link_libraries(main ${CMAKE_SOURCE_DIR}/lib/libraylib.a ${CMAKE_SOURCE_DIR}/lib/liba-star.a winmm opengl32)
 
 set_target_properties(main PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})

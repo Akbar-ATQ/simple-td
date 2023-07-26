@@ -32,7 +32,7 @@ public:
             if (tower)
             {
                 tower->StatusPanel();
-                UI::CloseSidePanelButton(isActive);
+                UI::SidePanelCloseButton(isActive);
             }
             else DrawSelectTowerPanel();
         }
@@ -51,7 +51,7 @@ public:
         // int towerPrice {10};
 
         towerPanel.Draw();
-        UI::CloseSidePanelButton(isActive);
+        UI::SidePanelCloseButton(isActive);
 
         // DrawText(TextFormat("Coins: %i", towerPrice), tower.data.position.x * TILE_SIZE, ((tower.data.position.y + 1) * TILE_SIZE), 20, BLACK);
 

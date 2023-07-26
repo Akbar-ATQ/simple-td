@@ -10,11 +10,15 @@ void LevelManager::GenerateLevel(GridMap& levelMap)
             Vector2 currentPosition {static_cast<float>(x), static_cast<float>(y)};
             if (levelMap[x][y].item == Item::BASE)
             {
-                level.map[x][y].obj = std::make_shared<Base>(currentPosition);
+                std::shared_ptr<Base> base = std::make_shared<Base>(currentPosition);
+                level.map[x][y].obj = base;
+                level.base = base;
             }
             else if (levelMap[x][y].item == Item::ROAD)
             {
-                level.map[x][y].obj = std::make_shared<Road>(currentPosition);
+                std::shared_ptr<Road> road = std::make_shared<Road>(currentPosition);
+                level.map[x][y].obj = road;
+                level.roads.push_back(road);
             }
             else if (levelMap[x][y].item == Item::PLATFORM)
             {
@@ -23,10 +27,14 @@ void LevelManager::GenerateLevel(GridMap& levelMap)
             }
             else if (levelMap[x][y].item == Item::SPAWN_POINT)
             {
-                level.map[x][y].obj = std::make_shared<SpawnPoint>(currentPosition);
+                std::shared_ptr<SpawnPoint> spawn = std::make_shared<SpawnPoint>(currentPosition, enemies);
+                level.map[x][y].obj = spawn;
+                level.spawnPoint = spawn;
             }
         }
     }
+
+    pathFinding.SetGenerator(level.map);
 };
 
 void LevelManager::HandleSignalEvent(Signal::EventData eventData)
@@ -60,6 +68,13 @@ void LevelManager::Update()
             if (level.map[x][y].item == Item::PLATFORM) level.GetObj<Platform>(x, y)->Update();
         }
     }
+
+    LevelManager::HandleWave();
+
+    for (auto& enemy : enemies)
+    {
+        enemy->Update();
+    }
 };
 
 void LevelManager::Draw()
@@ -73,5 +88,10 @@ void LevelManager::Draw()
             if (level.map[x][y].item == Item::BASE) level.GetObj<Base>(x, y)->Draw();
             if (level.map[x][y].item == Item::SPAWN_POINT) level.GetObj<SpawnPoint>(x, y)->Draw();
         }
+    }
+
+    for (auto& enemy : enemies)
+    {
+        enemy->Draw();
     }
 };
