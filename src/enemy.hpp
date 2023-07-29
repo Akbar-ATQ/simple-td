@@ -8,7 +8,6 @@
 #include "AStar.hpp"
 
 // task:
-// make enemy work
 // make tower shoot enemy
 
 class Enemy

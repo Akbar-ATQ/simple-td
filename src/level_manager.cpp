@@ -2,74 +2,62 @@
 
 void LevelManager::GenerateLevel(GridMap& levelMap)
 {
-    level.map = levelMap;
-    for (int x = 0; x < levelMap.size(); ++x)
+    level.SetMap(levelMap);
+    pathFinding.SetGenerator(level.GetMap());
+};
+
+void LevelManager::HandleWave()
+{
+    if (wave.start && !wave.inProgress)
     {
-        for (int y = 0; y < levelMap[x].size(); ++y)
-        {
-            Vector2 currentPosition {static_cast<float>(x), static_cast<float>(y)};
-            if (levelMap[x][y].item == Item::BASE)
-            {
-                std::shared_ptr<Base> base = std::make_shared<Base>(currentPosition);
-                level.map[x][y].obj = base;
-                level.base = base;
-            }
-            else if (levelMap[x][y].item == Item::ROAD)
-            {
-                std::shared_ptr<Road> road = std::make_shared<Road>(currentPosition);
-                level.map[x][y].obj = road;
-                level.roads.push_back(road);
-            }
-            else if (levelMap[x][y].item == Item::PLATFORM)
-            {
-                level.map[x][y].obj = std::make_shared<Platform>(currentPosition);
-                level.GetObj<Platform>(x, y)->signal.Connect(listener);
-            }
-            else if (levelMap[x][y].item == Item::SPAWN_POINT)
-            {
-                std::shared_ptr<SpawnPoint> spawn = std::make_shared<SpawnPoint>(currentPosition, enemies);
-                level.map[x][y].obj = spawn;
-                level.spawnPoint = spawn;
-            }
-        }
+        wave.inProgress = true;
+        wave.start = false;
     }
 
-    pathFinding.SetGenerator(level.map);
+    if (wave.inProgress)
+    {
+        auto path = pathFinding.GetPath(
+            {static_cast<int>(level.GetSpawnPoint()->data.position.x), static_cast<int>(level.GetSpawnPoint()->data.position.y)},
+            {static_cast<int>(level.GetBase()->data.position.x), static_cast<int>(level.GetBase()->data.position.y)}
+        );
+        level.GetSpawnPoint()->GenerateEnemy(wave.enemies, wave.interval, wave.inProgress, path);
+    }
+
+    // Condition to start wave
+    if (IsKeyPressed(KEY_S)) wave.start = true;
 };
 
 void LevelManager::HandleSignalEvent(Signal::EventData eventData)
 {
     switch (eventData.event)
     {
-    case Signal::Event::ACTIVATING_PLATFORM:
-        // Get platform in eventData.position and set it isSelectingTower to true
-        // Then set previous platform to false
-        static Vector2 prevPlatformPos {eventData.position};
-
-        level.GetObj<Platform>(eventData.position)->Activate();
-        if (!Tile::CollisionInTile(prevPlatformPos, eventData.position))
+        case Signal::Event::ACTIVATING_PLATFORM:
         {
-            level.GetObj<Platform>(prevPlatformPos)->Deactivate();
-        }
+            // Activate platform based on position in eventData
+            // and deactivate previously active platform
+            static Vector2 prevPlatformPos {eventData.position};
 
-        prevPlatformPos = eventData.position;
-        break;
-    default:
-        break;
+            level.GetObj<Platform>(eventData.position)->Activate();
+            if (!Tile::CollisionInTile(prevPlatformPos, eventData.position))
+            {
+                level.GetObj<Platform>(prevPlatformPos)->Deactivate();
+            }
+
+            prevPlatformPos = eventData.position;
+            break;
+        }
+        default: break;
     }
 };
 
 void LevelManager::Update()
 {
-    for (int x = 0; x < level.map.size(); ++x)
+    for (auto& platform : level.GetPlatforms())
     {
-        for (int y = 0; y < level.map[x].size(); ++y)
-        {
-            if (level.map[x][y].item == Item::PLATFORM) level.GetObj<Platform>(x, y)->Update();
-        }
+        platform->Update();
     }
 
-    LevelManager::HandleWave();
+    HandleWave();
 
     for (auto& enemy : enemies)
     {
@@ -79,19 +67,96 @@ void LevelManager::Update()
 
 void LevelManager::Draw()
 {
-    for (int x = 0; x < level.map.size(); ++x)
+    for (auto& road : level.GetRoads())
     {
-        for (int y = 0; y < level.map[x].size(); ++y)
-        {
-            if (level.map[x][y].item == Item::PLATFORM) level.GetObj<Platform>(x, y)->Draw();
-            if (level.map[x][y].item == Item::ROAD) level.GetObj<Road>(x, y)->Draw();
-            if (level.map[x][y].item == Item::BASE) level.GetObj<Base>(x, y)->Draw();
-            if (level.map[x][y].item == Item::SPAWN_POINT) level.GetObj<SpawnPoint>(x, y)->Draw();
-        }
+        road->Draw();
     }
+    for (auto& platform : level.GetPlatforms())
+    {
+        platform->Draw();
+    }
+    level.GetBase()->Draw();
+    level.GetSpawnPoint()->Draw();
 
     for (auto& enemy : enemies)
     {
         enemy->Draw();
     }
 };
+
+void LevelManager::Level::InitializeMap()
+{
+    // clear previous map
+    for (int x = 0; x < map.size(); ++x)
+    {
+        for (int y = 0; y < map[x].size(); ++y)
+        {
+            Vector2 currentPosition{static_cast<float>(x), static_cast<float>(y)};
+            const Item& item = map[x][y].item;
+
+            switch (item)
+            {
+                case Item::BASE:
+                {
+                    std::shared_ptr<Base> newBase = std::make_shared<Base>(currentPosition);
+                    map[x][y].obj = newBase;
+                    base = newBase;
+                    break;
+                }
+                case Item::ROAD:
+                {
+                    std::shared_ptr<Road> road = std::make_shared<Road>(currentPosition);
+                    map[x][y].obj = road;
+                    roads.push_back(road);
+                    break;
+                }
+                case Item::PLATFORM:
+                {
+                    std::shared_ptr<Platform> platform = std::make_shared<Platform>(currentPosition);
+                    platform->signal.Connect(levelManager->listener);
+                    map[x][y].obj = platform;
+                    platforms.push_back(platform);
+                    break;
+                }
+                case Item::SPAWN_POINT:
+                {
+                    std::shared_ptr<SpawnPoint> newSpawn = std::make_shared<SpawnPoint>(currentPosition, levelManager->enemies);
+                    map[x][y].obj = newSpawn;
+                    spawnPoint = newSpawn;
+                    break;
+                }
+            }
+        }
+    }
+};
+
+void LevelManager::Level::SetMap(GridMap& newMap)
+{
+    map = newMap;
+    InitializeMap();
+};
+GridMap& LevelManager::Level::GetMap() { return map; };
+
+template<typename T>
+std::shared_ptr<T> LevelManager::Level::GetObj(int x, int y) { return std::get<std::shared_ptr<T>>(map[x][y].obj); };
+template<typename T>
+std::shared_ptr<T> LevelManager::Level::GetObj(Vector2 v) { return std::get<std::shared_ptr<T>>(map[v.x][v.y].obj); };
+template<typename T>
+std::shared_ptr<T> LevelManager::Level::GetObj()
+{
+    for (const auto& row : map)
+    {
+        for (const auto& cell : row)
+        {
+            if (auto obj = std::get<std::shared_ptr<T>>(cell.obj))
+            {
+                return obj;
+            }
+        }
+    }
+};
+
+std::shared_ptr<SpawnPoint> LevelManager::Level::GetSpawnPoint() { return spawnPoint; };
+std::shared_ptr<Base> LevelManager::Level::GetBase() { return base; };
+std::vector<std::shared_ptr<Road>> LevelManager::Level::GetRoads() { return roads; };
+std::vector<std::shared_ptr<Platform>> LevelManager::Level::GetPlatforms() { return platforms; }

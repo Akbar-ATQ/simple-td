@@ -46,7 +46,7 @@ public:
 
     void Draw() { Tile::DrawRec(data.GetRec(), data.color); };
 
-    void GenerateEnemy(int enemyToGenerate, float interval, bool& waveInProgress, AStar::CoordinateList& path)
+    void GenerateEnemy(int waveEnemies, float interval, bool& waveInProgress, AStar::CoordinateList& path)
     {
         timer += GetFrameTime();
         if (timer >= interval)
@@ -56,7 +56,7 @@ public:
             enemies.push_back(std::make_shared<Enemy>(enemyStartingPosition, path));
             generatedEnemy += 1;
             timer = 0.0f;
-            if (generatedEnemy >= enemyToGenerate)
+            if (generatedEnemy >= waveEnemies)
             {
                 waveInProgress = false;
             }
@@ -82,28 +82,9 @@ public:
     ~LevelManager() = default;
 
     void GenerateLevel(GridMap& levelMap);
-    void HandleWave()
-    {
-        if (wave.start && !wave.inProgress)
-        {
-            wave.inProgress = true;
-            wave.start = false;
-        }
+    void HandleWave();
 
-        if (wave.inProgress)
-        {
-            int enemyToGenerate = 15;
-            float interval = 0.3;
-            auto path = pathFinding.GetPath(
-                {static_cast<int>(level.spawnPoint->data.position.x), static_cast<int>(level.spawnPoint->data.position.y)},
-                {static_cast<int>(level.base->data.position.x), static_cast<int>(level.base->data.position.y)}
-            );
-            level.spawnPoint->GenerateEnemy(enemyToGenerate, interval, wave.inProgress, path);
-        }
-
-        // Condition to start wave
-        if (IsKeyPressed(KEY_S)) wave.start = true;
-    };
+    // task: handle battle
 
     void HandleSignalEvent(Signal::EventData eventData);
 
@@ -111,23 +92,45 @@ public:
     void Draw();
 
 private:
-    struct Level
+    class Level
     {
         GridMap map;
+        // SpawnPoint, Base, Road and Platform are already exist in GridMap
+        // But sometimes there a need to get obj based on its position
+        // And sometimes there a need to get obj while not knowing its position
         std::shared_ptr<SpawnPoint> spawnPoint;
         std::shared_ptr<Base> base;
         std::vector<std::shared_ptr<Road>> roads;
+        std::vector<std::shared_ptr<Platform>> platforms;
+        LevelManager* levelManager;
+
+        void InitializeMap();
+    public:
+        Level(LevelManager* levelManager) : levelManager{levelManager} {};
+
+        void SetMap(GridMap& newMap);
+        GridMap& GetMap();
 
         template<typename T>
-        std::shared_ptr<T> GetObj(int x, int y) { return std::get<std::shared_ptr<T>>(map[x][y].obj); };
+        std::shared_ptr<T> GetObj(int x, int y);
         template<typename T>
-        std::shared_ptr<T> GetObj(Vector2 v ){ return std::get<std::shared_ptr<T>>(map[v.x][v.y].obj); };
+        std::shared_ptr<T> GetObj(Vector2 v);
+        template<typename T>
+        std::shared_ptr<T> GetObj(); // Get obj by type, but it expensive
+
+        std::shared_ptr<SpawnPoint> GetSpawnPoint();
+        std::shared_ptr<Base> GetBase();
+        std::vector<std::shared_ptr<Road>> GetRoads();
+        std::vector<std::shared_ptr<Platform>> GetPlatforms();
     };
-    Level level;
+    Level level {this};
+
     struct Wave
     {
         bool start {false};
         bool inProgress {false};
+        int enemies {15};
+        float interval {0.3};
     };
     Wave wave;
 
