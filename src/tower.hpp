@@ -23,7 +23,7 @@ public:
         float detectionRadius {4};
         float attackTimer {0.0f};
         float attackSpeed {0.2f};
-        float bulletSpeed {2.0f};
+        float bulletSpeed {2.0f}; // 10.0 is the cap
         float bulletDamage {1};
 
         Data(Vector2 pos, Color color) : EntityData{pos, TILE_SIZE, color}, center{pos.x + 0.5f, pos.y + 0.5f} {};
@@ -39,6 +39,8 @@ public:
         STRONG,
         WEAK,
     };
+
+    // Rectangle GetDetectionSqr() { return {}; };
 
     void DrawDetectionRange();
     void Draw() { Tile::DrawRec(data.GetRec(), data.color); };
@@ -67,14 +69,15 @@ public:
     };
 
 private:
-    struct Bullet {
+    struct Bullet
+    {
         Vector2 pos;
         Vector2 prevPos;
         float radius;
         float speed;
         Vector2 velocity {0, 0};
         Vector2 target;
-        int damage;
+        float damage;
     };
 
     std::vector<Bullet> m_bullets;

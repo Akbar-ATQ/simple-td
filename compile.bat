@@ -12,7 +12,7 @@ if "%1" == "-d" (
     goto end
 )
 echo.
-echo Using mingw32-make...
+echo Compiling...
 echo.
 mingw32-make
 :end

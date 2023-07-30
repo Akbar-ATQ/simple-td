@@ -58,8 +58,11 @@ public:
         if (Tile::ClickTile(towerPanel.data.position))
         {
             tower = std::make_shared<Tower>(data.position);
+            signal.Notify({Signal::Event::TOWER_ADDED, data.position});
         }
     };
+
+    std::shared_ptr<Tower> GetTower() { return tower; };
 
     void Activate() { isActive = true; };
     void Deactivate() { isActive = false; };

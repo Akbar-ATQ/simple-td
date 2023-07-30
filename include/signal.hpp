@@ -13,6 +13,7 @@ namespace Signal
     {
         REMOVE,
         ACTIVATING_PLATFORM,
+        TOWER_ADDED,
     };
 
     struct EventData

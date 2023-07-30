@@ -46,6 +46,11 @@ void LevelManager::HandleSignalEvent(Signal::EventData eventData)
             prevPlatformPos = eventData.position;
             break;
         }
+        case Signal::Event::TOWER_ADDED:
+        {
+            towers.push_back(level.GetObj<Platform>(eventData.position)->GetTower());
+            break;
+        }
         default: break;
     }
 };
