@@ -7,6 +7,7 @@
 #include "entity_data.hpp"
 #include "global_data.hpp"
 #include "tile.hpp"
+#include "grid_map.hpp"
 
 #include "signal.hpp"
 
@@ -38,10 +39,12 @@ public:
     void Draw() { Tile::DrawRec(data.GetRec(), data.color); };
 };
 
+#include <iostream>
+
 class SpawnPoint
 {
 public:
-    SpawnPoint(Vector2 pos, std::vector<std::shared_ptr<Enemy>>& enemies) : data{pos, TILE_SIZE, PURPLE}, enemies{enemies} {};
+    SpawnPoint(Vector2 pos, std::vector<std::shared_ptr<Enemy>>& enemies, Grid& grid) : data{pos, TILE_SIZE, PURPLE}, enemies{enemies}, grid{grid} {};
 
     EntityData data;
 
@@ -54,7 +57,11 @@ public:
         {
             Vector2 enemyStartingPosition {data.position.x + (GetRandomValue(0, 15) / 100.0f), data.position.y + (GetRandomValue(5, 40) / 100.0f)};
 
-            enemies.push_back(std::make_shared<Enemy>(enemyStartingPosition, path));
+            std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>(enemyStartingPosition, path);
+            enemies.push_back(enemy);
+            grid.map[static_cast<int>(enemy->data.position.x)][static_cast<int>(enemy->data.position.y)].enemies.push_back(enemy);
+            // std::cout << " enemies " << grid.map[static_cast<int>(enemy->data.position.x)][static_cast<int>(enemy->data.position.y)].IsEmpty();
+
             generatedEnemy += 1;
             timer = 0.0f;
             if (generatedEnemy >= waveEnemies)
@@ -69,76 +76,86 @@ private:
     float timer {0};
 
     std::vector<std::shared_ptr<Enemy>>& enemies;
+    Grid& grid;
 };
 
-class CombatManager
-{
-public:
-    CombatManager();
-    ~CombatManager();
+// class CombatManager
+// {
+// public:
+//     CombatManager();
+//     ~CombatManager();
 
-    // LevelManager own it
-    // enemy and tower have reference to it
+//     // LevelManager own it
+//     // enemy and tower have reference to it
 
-    std::vector<std::weak_ptr<Enemy>> GetEnemyInArea(radius) // used by tower to get enemies within its radius
-    {
-        q_enemies.GetInArea(radius);
-    };
+//     std::vector<std::weak_ptr<Enemy>> GetEnemyInArea(radius) // used by tower to get enemies within its radius
+//     {
+//         q_enemies.GetInArea(radius);
+//     };
 
-    void AddBullet(bullet) // call by tower
-    {
-        q_bullets.insert(bullet)
-    };
+//     void AddBullet(bullet) // call by tower
+//     {
+//         q_bullets.insert(bullet)
+//     };
 
-    void UpdateBullet(); // call bullet.Update()
+//     void UpdateBullet(); // call bullet.Update()
 
-    void Update() // call by LevelManager
-    {
-        // get tower range
-        // check enemies against tower range
-        // if collided ask tower to shoot to enemy direction
-        // get bullets from tower
+//     void Update() // call by LevelManager
+//     {
+//         // get tower range
+//         // check enemies against tower range
+//         // if collided ask tower to shoot to enemy direction
+//         // get bullets from tower
 
-        // enemies in quadtree
-        // tower search enemy within radius squared
-        // the return is a vector of enemies
-        // returned enemies then check collision against bullets
-        // bullet update pos -> enemy check collision with bullet line from prevPos + currentPos -> if not collided update position in quadtree
+//         // enemies in quadtree
+//         // tower search enemy within radius squared
+//         // the return is a vector of enemies
+//         // returned enemies then check collision against bullets
+//         // bullet update pos -> enemy check collision with bullet line from prevPos + currentPos -> if not collided update position in quadtree
 
-        for (auto& tower : towers)
-        {
-            q_enemies.GetInArea(tower.radius);
-            tower->shoot(enemiesInRange) // tower then pick target from enemies and shoot bullet toward taget
-            q_bullets = tower.GetBullet()
-        }
+//         for (auto& tower : towers)
+//         {
+//             q_enemies.GetInArea(tower.radius);
+//             tower->shoot(enemiesInRange) // tower then pick target from enemies and shoot bullet toward taget
+//             q_bullets = tower.GetBullet()
+//         }
 
-        // update bullet pos here //
+//         // update bullet pos here //
 
-        for (enemies)
-        {
-            bullets = q_bullets.GetInArea(enemy.detect)
-            for (bullet : bullets)
-            {
-                if (collision(enemy, bulletLine))
-                {
-                    enemy.TakeDamage(bullet.damage);
-                    // erase bullet
-                }
-            }
-        }
-        // update q_bullets
-    };
+//         for (enemies)
+//         {
+//             bullets = q_bullets.GetInArea(enemy.detect)
+//             for (bullet : bullets)
+//             {
+//                 if (collision(enemy, bulletLine))
+//                 {
+//                     enemy.TakeDamage(bullet.damage);
+//                     // erase bullet
+//                 }
+//             }
+//         }
+//         // update q_bullets
+//     };
 
-    void HandleSignalEvent(Signal::EventData eventData)
-    {
-        // handle remove enemy/bullet
-    };
+//     void HandleSignalEvent(Signal::EventData eventData)
+//     {
+//         // handle remove/update enemy/bullet
+//         // endX = rec.x + static_cast<int>(rec.width / TILE_SIZE)
+//         // endY = rec.y + static_cast<int>(rec.height / TILE_SIZE);
+//         // for (int x = rec.x; x <= endX; ++x)
+//         // {
+//         //     for (int y = rec.y; y <= endY; ++y)
+//         //     {
+//         //         items.push_back(map[x][y].GetItems);
+//         //     }
+//         // }
+//     };
 
-private:
-    // hold 
-    QuadTree q_enemies {{ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, 8, 4};;
-    QuadTree q_bullets {{ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, 8, 4};;
-};
+// private:
+//     // hold 
+//     QuadTree& q_enemies; // reference to LevelManager enemies
+//     QuadTree q_bullets {{ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, 8, 4};
+// };
 
 // ------------------------------ //
 
@@ -154,39 +171,39 @@ public:
     void GenerateLevel(GridMap& levelMap);
     void HandleWave();
 
-    void Combat()
-    {
-        // get tower range
-        // check enemies against tower range
-        // if collided ask tower to shoot to enemy direction
-        // get bullets from tower
+    // void Combat()
+    // {
+    //     // get tower range
+    //     // check enemies against tower range
+    //     // if collided ask tower to shoot to enemy direction
+    //     // get bullets from tower
 
-        // enemies in quadtree
-        // tower search enemy within radius squared
-        for (auto& tower : towers)
-        {
-            q_enemies.GetInArea(tower.radius);
-            tower->shoot(enemiesInRange)
-            q_bullets = tower.GetBullet()
-        }
-        // the return is a vector of enemies
-        // returned enemies then check collision against bullets
-        for (enemies)
-        {
-            bullets = q_bullets.GetInArea(enemy.detect)
-            // update bullet pos
-            for (bullet : bullets)
-            {
-                if (collision(enemy, bulletLine))
-                {
-                    enemy.TakeDamage(bullet.damage);
-                    // erase bullet
-                }
-                else // update q_bullet
-            }
-        }
-        // bullet update pos -> enemy check collision with bullet line from prevPos + currentPos -> if not collided update position in quadtree
-    };
+    //     // enemies in quadtree
+    //     // tower search enemy within radius squared
+    //     for (auto& tower : towers)
+    //     {
+    //         q_enemies.GetInArea(tower.radius);
+    //         tower->shoot(enemiesInRange)
+    //         q_bullets = tower.GetBullet()
+    //     }
+    //     // the return is a vector of enemies
+    //     // returned enemies then check collision against bullets
+    //     for (enemies)
+    //     {
+    //         bullets = q_bullets.GetInArea(enemy.detect)
+    //         // update bullet pos
+    //         for (bullet : bullets)
+    //         {
+    //             if (collision(enemy, bulletLine))
+    //             {
+    //                 enemy.TakeDamage(bullet.damage);
+    //                 // erase bullet
+    //             }
+    //             else // update q_bullet
+    //         }
+    //     }
+    //     // bullet update pos -> enemy check collision with bullet line from prevPos + currentPos -> if not collided update position in quadtree
+    // };
 
     void HandleSignalEvent(Signal::EventData eventData);
 
@@ -227,6 +244,8 @@ private:
     };
     Level level {this};
 
+    Grid grid;
+
     struct Wave
     {
         bool start {false};
@@ -238,7 +257,7 @@ private:
 
     QuadTree q_enemies {{ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, 8, 4};
     std::vector<std::shared_ptr<Enemy>> enemies;
-    std::vector<std::weak_ptr<Tower>> towers;
+    std::vector<std::shared_ptr<Tower>> towers;
 
     PathFinding pathFinding;
 

@@ -78,6 +78,7 @@ public:
     void Update()
     {
         SelectTower();
+        if (tower) tower->Update();
     };
 
 private:

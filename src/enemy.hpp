@@ -39,7 +39,7 @@ public:
 
     Data data;
 
-    void TakeDamage(int damage);
+    void TakeDamage(int damage) { data.hp -= damage; };
     // void AddPath(const AStar::CoordinateList& path) { m_path.coordinate = path; };
     void Move()
     {

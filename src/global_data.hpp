@@ -40,6 +40,7 @@ typedef std::vector<std::vector<MapData>> GridMap;
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
+// [todo] move tile variable to tile.hpp
 const int TILE_SIZE = 40;
 const Vector2 MAP_SIZE = {SCREEN_WIDTH / TILE_SIZE, SCREEN_HEIGHT / TILE_SIZE};
 

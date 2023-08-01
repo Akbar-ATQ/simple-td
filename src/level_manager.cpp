@@ -27,6 +27,8 @@ void LevelManager::HandleWave()
     if (IsKeyPressed(KEY_S)) wave.start = true;
 };
 
+
+#include <iostream>
 void LevelManager::HandleSignalEvent(Signal::EventData eventData)
 {
     switch (eventData.event)
@@ -49,6 +51,8 @@ void LevelManager::HandleSignalEvent(Signal::EventData eventData)
         case Signal::Event::TOWER_ADDED:
         {
             towers.push_back(level.GetObj<Platform>(eventData.position)->GetTower());
+            grid.map[eventData.position.x][eventData.position.y].towers.push_back(level.GetObj<Platform>(eventData.position)->GetTower());
+            // std::cout << " tower: " << towers.size() << " grid.towers " << grid.map[eventData.position.x][eventData.position.y].towers.size();
             break;
         }
         default: break;
@@ -64,10 +68,12 @@ void LevelManager::Update()
 
     HandleWave();
 
-    for (auto& enemy : enemies)
-    {
-        enemy->Update();
-    }
+    // for (auto& enemy : enemies)
+    // {
+    //     enemy->Update();
+    // }
+
+    grid.Update();
 };
 
 void LevelManager::Draw()
@@ -83,10 +89,11 @@ void LevelManager::Draw()
     level.GetBase()->Draw();
     level.GetSpawnPoint()->Draw();
 
-    for (auto& enemy : enemies)
-    {
-        enemy->Draw();
-    }
+    grid.Draw();
+    // for (auto& enemy : enemies)
+    // {
+    //     enemy->Draw();
+    // }
 };
 
 void LevelManager::Level::InitializeMap()
@@ -106,6 +113,7 @@ void LevelManager::Level::InitializeMap()
                     std::shared_ptr<Base> newBase = std::make_shared<Base>(currentPosition);
                     map[x][y].obj = newBase;
                     base = newBase;
+                    levelManager->grid.map[x][y].primaryEntity = newBase;
                     break;
                 }
                 case Item::ROAD:
@@ -113,6 +121,9 @@ void LevelManager::Level::InitializeMap()
                     std::shared_ptr<Road> road = std::make_shared<Road>(currentPosition);
                     map[x][y].obj = road;
                     roads.push_back(road);
+
+                    levelManager->grid.map[x][y].primaryEntity = road;
+                    levelManager->grid.map[x][y].primaryEntityId = Grid::Map::ROAD;
                     break;
                 }
                 case Item::PLATFORM:
@@ -121,13 +132,19 @@ void LevelManager::Level::InitializeMap()
                     platform->signal.Connect(levelManager->listener);
                     map[x][y].obj = platform;
                     platforms.push_back(platform);
+
+                    levelManager->grid.map[x][y].primaryEntity = platform;
+                    levelManager->grid.map[x][y].primaryEntityId = Grid::Map::PLATFORM;
                     break;
                 }
                 case Item::SPAWN_POINT:
                 {
-                    std::shared_ptr<SpawnPoint> newSpawn = std::make_shared<SpawnPoint>(currentPosition, levelManager->enemies);
+                    std::shared_ptr<SpawnPoint> newSpawn = std::make_shared<SpawnPoint>(currentPosition, levelManager->enemies, levelManager->grid);
                     map[x][y].obj = newSpawn;
                     spawnPoint = newSpawn;
+
+                    levelManager->grid.map[x][y].primaryEntity = newSpawn;
+                    levelManager->grid.map[x][y].primaryEntityId = Grid::Map::SPAWN_POINT;
                     break;
                 }
             }
