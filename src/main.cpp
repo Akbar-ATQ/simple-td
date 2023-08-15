@@ -58,8 +58,8 @@ int main()
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Simple TD V2");
 
     LevelData testLevel = TestLevel();
-    // LevelManager level;
-    // level.GenerateLevel(testLevel);
+    LevelManager level;
+    level.GenerateLevel(testLevel);
 
     // Main game loop
     SetTargetFPS(60);
@@ -73,7 +73,7 @@ int main()
 
             Tile::Draw();
 
-            // level.Draw();
+            level.Draw();
 
             // if (Tile::ClickTile({0, 0})) std::cout << "clicked ";
 

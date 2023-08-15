@@ -8,6 +8,7 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/main.cpp
   ${CMAKE_SOURCE_DIR}/src/level_manager.cpp
   ${CMAKE_SOURCE_DIR}/src/level/level.cpp
+  ${CMAKE_SOURCE_DIR}/src/level/grid.cpp
   ${CMAKE_SOURCE_DIR}/src/unit/path_finding.cpp
 )
 

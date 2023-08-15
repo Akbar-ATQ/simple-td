@@ -122,3 +122,19 @@ void Level::Grid::HandleCollision()
         }
     }
 };
+
+void Level::Grid::Draw()
+{
+    if (terrainId == TerrainID::BASE)
+    {
+        GetTerrain<Base>()->Draw();
+    }
+    else if (terrainId == TerrainID::ROAD)
+    {
+        GetTerrain<Road>()->Draw();
+    }
+    else if (terrainId == TerrainID::PLATFORM)
+    {
+        GetTerrain<Platform>()->Draw();
+    }
+};

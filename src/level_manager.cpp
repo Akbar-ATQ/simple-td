@@ -76,25 +76,26 @@ void LevelManager::GenerateLevel(LevelData &levelData)
 //     grid.Update();
 // };
 
-// void LevelManager::Draw()
-// {
-//     for (auto& road : level.GetRoads())
-//     {
-//         road->Draw();
-//     }
-//     for (auto& platform : level.GetPlatforms())
-//     {
-//         platform->Draw();
-//     }
-//     level.GetBase()->Draw();
-//     level.GetSpawnPoint()->Draw();
+void LevelManager::Draw()
+{
+    level.Draw();
+    // for (auto& road : level.GetRoads())
+    // {
+    //     road->Draw();
+    // }
+    // for (auto& platform : level.GetPlatforms())
+    // {
+    //     platform->Draw();
+    // }
+    // level.GetBase()->Draw();
+    // level.GetSpawnPoint()->Draw();
 
-//     grid.Draw();
-//     // for (auto& enemy : enemies)
-//     // {
-//     //     enemy->Draw();
-//     // }
-// };
+    // grid.Draw();
+    // for (auto& enemy : enemies)
+    // {
+    //     enemy->Draw();
+    // }
+};
 
 // // void LevelManager::Level::InitializeMap()
 // // {

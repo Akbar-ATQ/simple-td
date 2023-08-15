@@ -6,6 +6,8 @@
 #include "enemy.hpp"
 #include "tower.hpp"
 #include "platform.hpp"
+#include "base.hpp"
+#include "road.hpp"
 
 #include <vector>
 #include <memory>
@@ -74,7 +76,7 @@ public:
         // GetContents(); // enemies & bullets
         bool IsEmpty()
         {
-            if (terrainId == TerrainID::EMPTY || (enemies.empty() && towers.empty() && bullets.empty())) return true;
+            if (terrainId == TerrainID::EMPTY && (enemies.empty() && towers.empty() && bullets.empty())) return true;
             return false;
         };
 
@@ -145,10 +147,10 @@ public:
                 if (!map[x][y].IsEmpty())
                 {
                     map[x][y].Draw();
-                    for (auto& enemy : map[x][y].enemies)
-                    {
-                        enemy->Draw();
-                    }
+                    // for (auto& enemy : map[x][y].enemies)
+                    // {
+                    //     enemy->Draw();
+                    // }
                     // [TODO] need to create virtual calss Entity that have method Update() and Draw()
                     // so we can Draw() entity here
                     // std::visit([](auto& entity)

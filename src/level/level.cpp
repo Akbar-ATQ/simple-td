@@ -1,9 +1,10 @@
 #include "level.hpp"
 
-#include "base.hpp"
-#include "platform.hpp"
-#include "road.hpp"
+// #include "base.hpp"
+// #include "platform.hpp"
+// #include "road.hpp"
 #include "spawner.hpp"
+
 
 void Level::InitializeLevel(LevelData &levelData)
 {
@@ -22,13 +23,13 @@ void Level::InitializeLevel(LevelData &levelData)
                 case TerrainID::ROAD:
                 {
                     grid.terrainId = TerrainID::ROAD;
-                    // grid.terrain = std::make_shared<Road>(currentPosition);
+                    grid.terrain = std::make_shared<Road>(currentPosition);
                     break;
                 }
                 case TerrainID::PLATFORM:
                 {
                     grid.terrainId = TerrainID::PLATFORM;
-                    // grid.terrain = std::make_shared<Platform>(currentPosition);
+                    grid.terrain = std::make_shared<Platform>(currentPosition);
                     break;
                 }
                 case TerrainID::SPAWNER:
@@ -40,7 +41,7 @@ void Level::InitializeLevel(LevelData &levelData)
                 case TerrainID::BASE:
                 {
                     grid.terrainId = TerrainID::BASE;
-                    // grid.terrain = std::make_shared<Base>(currentPosition);
+                    grid.terrain = std::make_shared<Base>(currentPosition);
                     break;
                 }
             }
