@@ -16,6 +16,17 @@ enum class Item
     EMPTY,
 };
 
+enum class TerrainID
+{
+    BASE,
+    SPAWNER,
+    ROAD,
+    PLATFORM,
+    EMPTY,
+};
+
+using LevelData = std::vector<std::vector<TerrainID>>;
+
 class Road;
 class SpawnPoint;
 class Base;

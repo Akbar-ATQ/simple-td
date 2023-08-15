@@ -16,6 +16,7 @@
 # source code
 *.cpp text
 *.h text
+*.hpp text
 *.php text
 *.css text
 *.sass text

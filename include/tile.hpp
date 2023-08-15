@@ -6,6 +6,7 @@
 #include <string>
 
 // ---------- Handle tile related task/calculation ---------- //
+// [TODO] refactor tile into grid
 namespace Tile
 {
     void Draw(); // Draw the map in tile grid

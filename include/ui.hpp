@@ -20,7 +20,7 @@ namespace UI
 
     inline void SidePanelCloseButton(bool& toggle)
     {
-        if (GuiButton(closeButton, "Close")) toggle = false;;
+        if (GuiButton(closeButton, "Close")) toggle = false;
     };
 };
 
