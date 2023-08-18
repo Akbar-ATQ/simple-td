@@ -59,22 +59,22 @@ void LevelManager::GenerateLevel(LevelData &levelData)
 //     }
 // };
 
-// void LevelManager::Update()
-// {
-//     for (auto& platform : level.GetPlatforms())
-//     {
-//         platform->Update();
-//     }
+void LevelManager::Update()
+{
+    // for (auto& platform : level.GetPlatforms())
+    // {
+    //     platform->Update();
+    // }
 
-//     HandleWave();
+    // HandleWave();
 
-//     // for (auto& enemy : enemies)
-//     // {
-//     //     enemy->Update();
-//     // }
+    // for (auto& enemy : enemies)
+    // {
+    //     enemy->Update();
+    // }
 
-//     grid.Update();
-// };
+    level.Update();
+};
 
 void LevelManager::Draw()
 {

@@ -8,6 +8,10 @@
 #include "platform.hpp"
 #include "base.hpp"
 #include "road.hpp"
+#include "spawner.hpp"
+#include "path_finding.hpp"
+
+#include "AStar.hpp"
 
 #include <vector>
 #include <memory>
@@ -45,6 +49,9 @@ public:
     Level() = default;
     ~Level() = default;
 
+    PathFinding pathFinding;
+    Vec2i basePos;
+
     class Grid
     {
     public:
@@ -61,7 +68,7 @@ public:
         std::variant<
             std::shared_ptr<Base>,
             std::shared_ptr<Road>,
-            std::shared_ptr<SpawnPoint>,
+            std::shared_ptr<Spawner>,
             std::shared_ptr<Platform>
         > terrain;
 
@@ -88,14 +95,22 @@ public:
 
         void HandleCollision();
 
+        void UpdateSpawner();
+
         void Update()
         {
+            // [todo]
+            // Make the call here like this:
+            // UpdateTerrain();
+            // UpdateUnit();
+            // HandleCollision();
+
+            UpdateSpawner();
+
             UpdateEnemies();
             UpdateBullets();
             HandleCollision();
-            TowerDetection();
-            // HandleCollision();
-            // if (terrainId == PLATFORM) GetPrimaryEntity<Platform>()->Update();
+            TowerDetection(); // Rename it to UpdateTower()
         };
 
         void Draw();
@@ -119,6 +134,12 @@ public:
     private:
         Level& level;
     };
+
+    // This enemies is to handle enemy->Draw()
+    // Drawing enemy in cell will result in enemy partially gone when it
+    // overlap between two cells, because the other cell don't have the enemy to draw,
+    // or if the enemy ownership are shared between cells, the enemy->Draw() will be called twice.
+    std::vector<std::weak_ptr<Enemy>> enemies;
 
     std::vector<std::vector<Grid>> map;
 
@@ -161,6 +182,25 @@ public:
                 }
             }
         }
+
+        // ---------- Handle drawing enemy and removing it if expire ---------- //
+        bool enemyExpire {false};
+        for (const auto &enemy : enemies)
+        {
+            const auto lockedEnemy = enemy.lock();
+            if (lockedEnemy) lockedEnemy->Draw();
+            else enemyExpire = true;
+        }
+
+        if (enemyExpire)
+        {
+            enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
+                [](const auto &enemy)
+                {
+                    return enemy.expired();
+                }), enemies.end());
+        }
+        // ------------------------------ //
     };
 };
 

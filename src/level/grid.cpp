@@ -1,13 +1,41 @@
 #include "level.hpp"
 
+#include <iostream>
+
 void Level::Grid::UpdateEnemies()
 {
+    // [todo]
+    // Currently enemy will only moved to other grid cell when it position (top left corner) is not inside this grid cell again.
+    // it will become problem for bullet collision since bullet check collision against enemy in this grid cell,
+    // but there can be an enemy that is between two grid cells but not yet moved.
+    // solution: when enemy is between two grid cell, its ownership is shared.
+    // how to implement it is another problem.
+    // Maye using shared_ptr.use_count() to check the number of owner, and make it a rule that
+    // other that is not grid can only have weak_ptr
+    // Or I can just use weak_ptr for other cell
+    
+
     // use move semantic
     std::vector<std::shared_ptr<Enemy>> enemiesToMove;
+    // std::vector<std::shared_ptr<Enemy>> sharedEnemies;
     for (auto& enemy : enemies)
     {
         enemy->Update();
-        if (!Tile::CollisionInTile(enemy->data.position, {position.x, position.y})) enemiesToMove.push_back(enemy);
+        if (!Tile::CollisionInTile(enemy->data.position, {position.x, position.y}))
+        {
+            enemiesToMove.push_back(enemy);
+        }
+
+        // check whether enemy is between two grid cells
+        // float enemyGridSize = (((enemy->data.size * enemy->data.size) / (TILE_SIZE * TILE_SIZE)) * 100) / 100;
+
+        // if (enemy->data.position.x < position.x ||
+        //     enemy->data.position.x + (enemyGridSize * 2) > position.x + 1 ||
+        //     enemy->data.position.y < position.y ||
+        //     enemy->data.position.y + (enemyGridSize * 2) > position.y + 1)
+        // {
+        //     share ownership
+        // }
     }
 
     if (!enemiesToMove.empty())
@@ -123,11 +151,35 @@ void Level::Grid::HandleCollision()
     }
 };
 
+#include <iostream>
+
+void Level::Grid::UpdateSpawner()
+{
+    if (terrainId == TerrainID::SPAWNER)
+    {
+        std::shared_ptr spawner = GetTerrain<Spawner>();
+        spawner->Update();
+        if (spawner->wave.inProgress)
+        {
+            // std::cout << "test";
+            auto path = level.pathFinding.GetPath(
+                {static_cast<int>(position.x), static_cast<int>(position.y)},
+                {static_cast<int>(level.basePos.x), static_cast<int>(level.basePos.y)}
+            );
+            spawner->GenerateEnemy(level.enemies, enemies, path);
+        }
+    }
+};
+
 void Level::Grid::Draw()
 {
     if (terrainId == TerrainID::BASE)
     {
         GetTerrain<Base>()->Draw();
+    }
+    else if (terrainId == TerrainID::SPAWNER)
+    {
+        GetTerrain<Spawner>()->Draw();
     }
     else if (terrainId == TerrainID::ROAD)
     {
@@ -137,4 +189,9 @@ void Level::Grid::Draw()
     {
         GetTerrain<Platform>()->Draw();
     }
+
+    // for (const auto &enemy : enemies)
+    // {
+    //     enemy->Draw();
+    // }
 };

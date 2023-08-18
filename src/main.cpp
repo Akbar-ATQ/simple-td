@@ -65,7 +65,7 @@ int main()
     SetTargetFPS(60);
     while (!WindowShouldClose())
     {
-        // level.Update();
+        level.Update();
 
         BeginDrawing();
 
@@ -74,10 +74,6 @@ int main()
             Tile::Draw();
 
             level.Draw();
-
-            // if (Tile::ClickTile({0, 0})) std::cout << "clicked ";
-
-            // testTower.Draw();
 
         EndDrawing();
     }

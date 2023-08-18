@@ -71,14 +71,14 @@ private:
 
     // Grid grid;
 
-    struct Wave
-    {
-        bool start {false};
-        bool inProgress {false};
-        int enemies {15};
-        float interval {0.3};
-    };
-    Wave wave;
+    // struct Wave
+    // {
+    //     bool start {false};
+    //     bool inProgress {false};
+    //     int enemies {15};
+    //     float interval {0.3};
+    // };
+    // Wave wave;
 
     // QuadTree q_enemies {{ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, 8, 4};
     // std::vector<std::shared_ptr<Enemy>> enemies;

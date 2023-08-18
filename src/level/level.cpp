@@ -3,11 +3,12 @@
 // #include "base.hpp"
 // #include "platform.hpp"
 // #include "road.hpp"
-#include "spawner.hpp"
-
+// #include "spawner.hpp"
+#include <iostream>
 
 void Level::InitializeLevel(LevelData &levelData)
 {
+    pathFinding.SetGenerator(levelData);
     for (int x = 0; x < MAP_SIZE.x; ++x)
     {
         std::vector<Grid> gridY;
@@ -35,13 +36,14 @@ void Level::InitializeLevel(LevelData &levelData)
                 case TerrainID::SPAWNER:
                 {
                     grid.terrainId = TerrainID::SPAWNER;
-                    // grid.terrain = std::make_shared<Spawner>(currentPosition);
+                    grid.terrain = std::make_shared<Spawner>(currentPosition);
                     break;
                 }
                 case TerrainID::BASE:
                 {
                     grid.terrainId = TerrainID::BASE;
                     grid.terrain = std::make_shared<Base>(currentPosition);
+                    basePos = {x, y};
                     break;
                 }
             }

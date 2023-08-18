@@ -2,7 +2,7 @@
 
 #include <vector>
 
-void PathFinding::SetGenerator(GridMap& map)
+void PathFinding::SetGenerator(LevelData &map)
 {
     generator.setWorldSize({static_cast<int>(MAP_SIZE.x), static_cast<int>(MAP_SIZE.y)});
     generator.setHeuristic(AStar::Heuristic::euclidean);
@@ -10,31 +10,31 @@ void PathFinding::SetGenerator(GridMap& map)
     SetCollision(map);
 };
 
-void PathFinding::SetCollision(GridMap& map)
+void PathFinding::SetCollision(LevelData &map)
 {
     std::vector<AStar::Vec2i> walls;
     auto AddWalls = [&walls, &map](const int x, const int y) 
     { 
         AStar::Vec2i below = {x, y + 1};
-        if (map[below.x][below.y].item == Item::EMPTY)
+        if (map[below.x][below.y] == TerrainID::EMPTY)
         {
             walls.push_back(below);
         }
 
         AStar::Vec2i right = {x + 1, y};
-        if (map[right.x][right.y].item == Item::EMPTY)
+        if (map[right.x][right.y] == TerrainID::EMPTY)
         {
             walls.push_back(right);
         }
 
         AStar::Vec2i above = {x, y - 1};
-        if (map[above.x][above.y].item == Item::EMPTY)
+        if (map[above.x][above.y] == TerrainID::EMPTY)
         {
             walls.push_back(above);
         }
 
         AStar::Vec2i left = {x - 1, y};
-        if (map[left.x][left.y].item == Item::EMPTY)
+        if (map[left.x][left.y] == TerrainID::EMPTY)
         {
             walls.push_back(left);
         }
@@ -44,7 +44,7 @@ void PathFinding::SetCollision(GridMap& map)
     {
         for (int y = 0; y < map[x].size(); ++y)
         {
-            if (map[x][y].item == Item::ROAD) AddWalls(x, y);
+            if (map[x][y] == TerrainID::ROAD) AddWalls(x, y);
         }
     }
 
