@@ -1,5 +1,5 @@
-#ifndef PLATFORM_H
-#define PLATFORM_H
+#ifndef PLATFORM_HPP
+#define PLATFORM_HPP
 
 #include "global_data.hpp"
 #include "tile.hpp"
@@ -7,7 +7,8 @@
 #include "tower.hpp"
 #include "ui.hpp"
 
-#include "signal.hpp"
+#include "event_signal.hpp"
+#include "event_list.hpp"
 
 #include "raylib.h"
 
@@ -21,7 +22,7 @@ public:
     ~Platform() = default;
 
     EntityData data;
-    Signal::Signal signal;
+    std::shared_ptr<Event::Manager> eventEmitter = Event::Manager::Create();
 
     void Draw()
     {
@@ -58,7 +59,10 @@ public:
         if (Tile::ClickTile(towerPanel.data.position))
         {
             tower = std::make_shared<Tower>(data.position);
-            signal.Notify({Signal::Event::TOWER_ADDED, data.position});
+
+            Event::TowerAdded towerAdded;
+            towerAdded.position = data.position;
+            eventEmitter->Emit(towerAdded);
         }
     };
 
@@ -67,17 +71,21 @@ public:
     void Activate() { isActive = true; };
     void Deactivate() { isActive = false; };
 
-    void SelectTower()
+    void ActivateOnClick()
     {
-        // Send signal to levelManager {Event::SELECTING_TOWER, this platform position}
-        // levelManager then search platform in EventData.position and turn `isActive` true and other platform false
-        // then in Draw() if (isActive) DrawSelectTowerPanel()
-        if (Tile::ClickTile(data.position)) signal.Notify({Signal::Event::ACTIVATING_PLATFORM, data.position});
+        if (Tile::ClickTile(data.position))
+        {
+            Activate();
+
+            Event::PlatformActivated platformActivated;
+            platformActivated.position = data.position;
+            eventEmitter->Emit(platformActivated);
+        }
     };
 
     void Update()
     {
-        SelectTower();
+        ActivateOnClick();
         if (tower) tower->Update();
     };
 

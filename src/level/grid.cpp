@@ -13,7 +13,7 @@ void Level::Grid::UpdateEnemies()
     // Maye using shared_ptr.use_count() to check the number of owner, and make it a rule that
     // other that is not grid can only have weak_ptr
     // Or I can just use weak_ptr for other cell
-    
+
 
     // use move semantic
     std::vector<std::shared_ptr<Enemy>> enemiesToMove;
@@ -44,17 +44,17 @@ void Level::Grid::UpdateEnemies()
         {
             int newX = static_cast<int>(enemyToMove->data.position.x);
             int newY = static_cast<int>(enemyToMove->data.position.y);
-            level.map[newX][newY].enemies.push_back(enemyToMove);
+            level.map[newX][newY]->enemies.push_back(enemyToMove);
         }
 
-        level.map[position.x][position.y].enemies.erase(std::remove_if(level.map[position.x][position.y].enemies.begin(), level.map[position.x][position.y].enemies.end(),
+        level.map[position.x][position.y]->enemies.erase(std::remove_if(level.map[position.x][position.y]->enemies.begin(), level.map[position.x][position.y]->enemies.end(),
             [this](const std::shared_ptr<Enemy> enemy)
             {
                 if (enemy->data.hp <= 0) return true;
                 int newX = static_cast<int>(enemy->data.position.x);
                 int newY = static_cast<int>(enemy->data.position.y);
                 return newX != position.x || newY != position.y;
-            }), level.map[position.x][position.y].enemies.end());
+            }), level.map[position.x][position.y]->enemies.end());
     }
 };
 
@@ -78,12 +78,12 @@ void Level::Grid::TowerDetection()
         {
             for (int y = startRange.y; y < endRange.y; ++y)
             {
-                if (level.map[x][y].terrainId == TerrainID::ROAD && !level.map[x][y].enemies.empty())
+                if (level.map[x][y]->terrainId == TerrainID::ROAD && !level.map[x][y]->enemies.empty())
                 {
                     enemiesInRange.insert(
                         enemiesInRange.end(),
-                        level.map[x][y].enemies.begin(),
-                        level.map[x][y].enemies.end()
+                        level.map[x][y]->enemies.begin(),
+                        level.map[x][y]->enemies.end()
                     );
                 }
 
@@ -116,18 +116,18 @@ void Level::Grid::UpdateBullets()
             int newY = static_cast<int>(bulletToMove->pos.y);
 
             if ((newX >= 0 && newY >= 0) && (newX < MAP_SIZE.x && newY < MAP_SIZE.y))
-                level.map[newX][newY].bullets.push_back(bulletToMove);
+                level.map[newX][newY]->bullets.push_back(bulletToMove);
             else bulletToMove->RemoveFromTower(bulletToMove);
         }
 
-        level.map[position.x][position.y].bullets.erase(
-            std::remove_if(level.map[position.x][position.y].bullets.begin(), level.map[position.x][position.y].bullets.end(),
+        level.map[position.x][position.y]->bullets.erase(
+            std::remove_if(level.map[position.x][position.y]->bullets.begin(), level.map[position.x][position.y]->bullets.end(),
             [this](const std::shared_ptr<Tower::Bullet> bullet)
             {
                 int newX = static_cast<int>(bullet->pos.x);
                 int newY = static_cast<int>(bullet->pos.y);
                 return newX != position.x || newY != position.y;
-            }), level.map[position.x][position.y].bullets.end());
+            }), level.map[position.x][position.y]->bullets.end());
     }
 };
 

@@ -9,8 +9,6 @@
 #include "tile.hpp"
 #include "level.hpp"
 
-#include "signal.hpp"
-
 #include "raylib.h"
 #include "AStar.hpp"
 
@@ -30,7 +28,7 @@ public:
     void GenerateLevel(LevelData &levelData);
     void HandleWave();
 
-    void HandleSignalEvent(Signal::EventData eventData);
+    // void HandleSignalEvent(Signal::EventData eventData);
 
     void Update();
     void Draw();

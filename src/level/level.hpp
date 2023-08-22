@@ -11,6 +11,9 @@
 #include "spawner.hpp"
 #include "path_finding.hpp"
 
+#include "event_signal.hpp"
+#include "event_list.hpp"
+
 #include "AStar.hpp"
 
 #include <vector>
@@ -61,6 +64,8 @@ public:
         // what is in [x][y], map handle that
         const Vec2i position;
 
+        std::shared_ptr<Event::Signal> listener;
+
         // ---------- Entity ---------- //
 
         TerrainID terrainId {TerrainID::EMPTY};
@@ -97,6 +102,30 @@ public:
 
         void UpdateSpawner();
 
+        void UpdatePlatform()
+        {
+            std::shared_ptr<Platform> platform = GetTerrain<Platform>();
+            platform->Update();
+        };
+
+        void OnPlatformActivated(const Event::PlatformActivated platform)
+        {
+            static Vector2 prevPlatformPos {platform.position};
+
+            if (!Tile::CollisionInTile(prevPlatformPos, platform.position))
+            {
+                level.map[prevPlatformPos.x][prevPlatformPos.y]->GetTerrain<Platform>()->Deactivate();
+            }
+
+            prevPlatformPos = platform.position;
+        };
+
+        void UpdateTerrain()
+        {
+            if (terrainId == TerrainID::SPAWNER) UpdateSpawner();
+            else if (terrainId == TerrainID::PLATFORM) UpdatePlatform();
+        };
+
         void Update()
         {
             // [todo]
@@ -105,7 +134,7 @@ public:
             // UpdateUnit();
             // HandleCollision();
 
-            UpdateSpawner();
+            UpdateTerrain();
 
             UpdateEnemies();
             UpdateBullets();
@@ -141,7 +170,7 @@ public:
     // or if the enemy ownership are shared between cells, the enemy->Draw() will be called twice.
     std::vector<std::weak_ptr<Enemy>> enemies;
 
-    std::vector<std::vector<Grid>> map;
+    std::vector<std::vector<std::unique_ptr<Grid>>> map;
 
     void InitializeLevel(LevelData &levelData);
 
@@ -151,9 +180,9 @@ public:
         {
             for (int y = 0; y < map[x].size(); ++y)
             {
-                if (!map[x][y].IsEmpty())
+                if (!map[x][y]->IsEmpty())
                 {
-                    map[x][y].Update();
+                    map[x][y]->Update();
                 }
             }
         }
@@ -165,9 +194,9 @@ public:
         {
             for (int y = 0; y < map[x].size(); ++y)
             {
-                if (!map[x][y].IsEmpty())
+                if (!map[x][y]->IsEmpty())
                 {
-                    map[x][y].Draw();
+                    map[x][y]->Draw();
                     // for (auto& enemy : map[x][y].enemies)
                     // {
                     //     enemy->Draw();
