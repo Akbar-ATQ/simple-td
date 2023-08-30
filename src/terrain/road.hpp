@@ -1,3 +1,6 @@
+#ifndef ROAD_HPP
+#define ROAD_HPP
+
 #include "tile.hpp"
 
 #include "raylib.h"
@@ -11,3 +14,5 @@ public:
 
     void Draw() { Tile::DrawRec(data.GetRec(), data.color); };
 };
+
+#endif

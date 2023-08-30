@@ -111,7 +111,7 @@ public:
 
         if (!enemiesInRange.empty())
         {
-            target.position = enemiesInRange[0]->data.position;
+            target.position = enemiesInRange[0]->data.GetRealPos();
             target.isExist = true;
         }
         else

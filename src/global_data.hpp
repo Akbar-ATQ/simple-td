@@ -4,7 +4,6 @@
 #include "raylib.h"
 
 #include <vector>
-#include <variant>
 #include <memory>
 
 enum class Item
@@ -27,27 +26,26 @@ enum class TerrainID
 
 using LevelData = std::vector<std::vector<TerrainID>>;
 
-class Road;
-class SpawnPoint;
-class Base;
-class Platform;
-struct Empty {};
-
-struct MapData
+struct Vec2i
 {
-    float x;
-    float y;
-    Item item;
-    std::variant<
-        std::shared_ptr<Base>,
-        std::shared_ptr<Road>,
-        std::shared_ptr<SpawnPoint>,
-        std::shared_ptr<Platform>,
-        std::shared_ptr<Empty>
-    > obj {std::make_shared<Empty>()};
-};
+    int x;
+    int y;
 
-typedef std::vector<std::vector<MapData>> GridMap;
+    Vec2i() : x(0), y(0) {};
+    Vec2i(int x, int y) : x(x), y(y) {};
+
+    Vec2i operator+(const Vec2i& other) const { return Vec2i(x + other.x, y + other.y); };
+    Vec2i operator-(const Vec2i& other) const { return Vec2i(x - other.x, y - other.y); };
+    Vec2i operator*(const int scalar) const { return Vec2i(x * scalar, y * scalar); };
+    Vec2i operator/(const int divisor) const { return Vec2i(x / divisor, y / divisor); };
+
+    bool operator==(const Vec2i& other) const { return x == other.x && y == other.y; };
+    bool operator!=(const Vec2i& other) const { return !(*this == other); };
+    bool operator<(const Vec2i& other) const { return x < other.x && y < other.y; };
+    bool operator<=(const Vec2i& other) const { return x <= other.x && y <= other.y; };
+    bool operator>(const Vec2i& other) const { return x > other.x && y > other.y; };
+    bool operator>=(const Vec2i& other) const { return x >= other.x && y >= other.y; };
+};
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;

@@ -67,6 +67,11 @@ public:
     };
 
     std::shared_ptr<Tower> GetTower() { return tower; };
+    bool HasTower()
+    {
+        if (tower) return true;
+        return false;
+    };
 
     void Activate() { isActive = true; };
     void Deactivate() { isActive = false; };

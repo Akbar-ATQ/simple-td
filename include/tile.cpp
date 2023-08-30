@@ -68,6 +68,12 @@ float Tile::RealPosition(const float pos)
     return pos * TILE_SIZE;
 };
 
+bool Tile::OutsideMap(const int x, const int y)
+{
+    if (x < 0 || y < 0 || x > MAP_SIZE.x || y > MAP_SIZE.y) return true;
+    return false;
+};
+
 bool Tile::ClickTile(const Vector2 tilePos)
 {
     return (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && CollisionInTile(Position(GetMousePosition()), tilePos));
@@ -76,6 +82,14 @@ bool Tile::ClickTile(const Vector2 tilePos)
 bool Tile::CollisionInTile(const Vector2 v1, const Vector2 v2)
 {
     return (static_cast<int>(v1.x) == static_cast<int>(v2.x) && static_cast<int>(v1.y) == static_cast<int>(v2.y));
+};
+
+bool Tile::CollisionRecTile(const Rectangle rec, const Vector2 tile)
+{
+    Rectangle grid {(tile.x * TILE_SIZE), (tile.y * TILE_SIZE), TILE_SIZE, TILE_SIZE};
+    if (CheckCollisionRecs(rec, grid))
+        return true;
+    return false;
 };
 
 bool Tile::CollisionCircleRec(const Vector2 circleCenter, float circleRadius, const Rectangle rectangle)

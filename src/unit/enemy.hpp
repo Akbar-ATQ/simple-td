@@ -10,10 +10,12 @@
 // task:
 // make tower shoot enemy
 
+#include <iostream>
+
 class Enemy
 {
 public:
-    Enemy(Vector2 pos, AStar::CoordinateList& path) : data{pos, 20, RED, 100, 1.5}, m_path{path}
+    Enemy(Vector2 pos, AStar::CoordinateList& path) : data{pos, 20, RED, 5, 55.5}, m_path{path}
     {
         // [BUG]
         // when the path direction is changing, it don't perserve the original offset
@@ -28,10 +30,10 @@ public:
     };
     ~Enemy() = default;
 
-    struct Data : public EntityData
+    struct Data : public MovingEntityData
     {
         Data(Vector2 pos, float size, Color color, int hp, float speed)
-        : EntityData{pos, size, color}, hp{hp}, speed{speed} {};
+        : MovingEntityData{pos, size, color}, hp{hp}, speed{speed} {};
 
         int hp;
         float speed;
@@ -48,22 +50,48 @@ public:
             int targetX = m_path.coordinate[m_path.index].x;
             int targetY = m_path.coordinate[m_path.index].y;
 
-            if (static_cast<int>(data.position.x - (data.size / 100.0f)) != targetX)
+
+            // if (static_cast<int>(data.position.x - (data.size / 100.0f)) != targetX)
+            // {
+            //     if (static_cast<int>(data.position.x - (data.size / 100.0f)) > targetX)
+            //         data.position.x -= data.speed * GetFrameTime();
+            //     else
+            //         data.position.x += data.speed * GetFrameTime();
+            // }
+            // else if (static_cast<int>(data.position.y - (data.size / 100.0f)) != targetY)
+            // {
+            //     if (static_cast<int>(data.position.y - (data.size / 100.0f)) > targetY)
+            //         data.position.y -= data.speed * GetFrameTime();
+            //     else
+            //         data.position.y += data.speed * GetFrameTime();
+            // }
+            // std::cout << "gridX: " << data.gridPosition.x << " targetX: " << targetX << " localX: " << data.localPosition.x << std::endl;
+            // std::cout << "gridY: " << data.gridPosition.y << " targetY: " << targetY << " localY: " << data.localPosition.y << std::endl;
+            if (data.gridPosition.x != targetX)
             {
-                if ((data.position.x - (data.size / 100.0f)) > targetX)
-                    data.position.x -= data.speed * GetFrameTime();
+                if (data.gridPosition.x > targetX)
+                    data.localPosition.x -= data.speed * GetFrameTime();
                 else
-                    data.position.x += data.speed * GetFrameTime();
+                    data.localPosition.x += data.speed * GetFrameTime();
             }
-            else if (static_cast<int>(data.position.y - (data.size / 100.0f)) != targetY)
+            else if (data.gridPosition.y != targetY)
             {
-                if ((data.position.y - (data.size / 100.0f)) > targetY)
-                    data.position.y -= data.speed * GetFrameTime();
+                if (data.gridPosition.y > targetY)
+                    data.localPosition.y -= data.speed * GetFrameTime();
                 else
-                    data.position.y += data.speed * GetFrameTime();
+                    data.localPosition.y += data.speed * GetFrameTime();
             }
 
-            if (static_cast<int>(data.position.x - data.size) == targetX && static_cast<int>(data.position.y - data.size) == targetY)
+            if (data.localPosition.x > TILE_SIZE || data.localPosition.y > TILE_SIZE ||
+                data.localPosition.x < 0 || data.localPosition.y < 0
+                )
+            {
+                // std::cout << "gridX: " << data.gridPosition.x << " targetX: " << targetX << " localX: " << data.localPosition.x << std::endl;
+                // std::cout << "gridY: " << data.gridPosition.y << " targetY: " << targetY << " localY: " << data.localPosition.y << std::endl;
+                data.MoveGrid({targetX, targetY});
+            }
+
+            if (static_cast<int>(data.gridPosition.x) == targetX && static_cast<int>(data.gridPosition.y) == targetY)
             {
                 m_path.index++;
             }
@@ -74,7 +102,10 @@ public:
     {
         Move();
     };
-    void Draw() { Tile::DrawRec(data.GetRec(), data.color); };
+    void Draw()
+    {
+        Tile::DrawRec(data.GetRec(), data.color);
+    };
 
 private:
     struct Path

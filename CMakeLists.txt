@@ -6,9 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(SOURCES
   ${PROJECT_SOURCE_DIR}/include/tile.cpp
   ${CMAKE_SOURCE_DIR}/src/main.cpp
-  ${CMAKE_SOURCE_DIR}/src/level_manager.cpp
-  ${CMAKE_SOURCE_DIR}/src/level/level.cpp
-  ${CMAKE_SOURCE_DIR}/src/level/grid.cpp
+  ${CMAKE_SOURCE_DIR}/src/level.cpp
   ${CMAKE_SOURCE_DIR}/src/unit/path_finding.cpp
 )
 
@@ -20,7 +18,7 @@ target_include_directories(main PUBLIC
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/include_external
     ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_SOURCE_DIR}/src/level
+    ${PROJECT_SOURCE_DIR}/src/grid
     ${PROJECT_SOURCE_DIR}/src/terrain
     ${PROJECT_SOURCE_DIR}/src/unit
 )

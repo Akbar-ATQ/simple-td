@@ -1,3 +1,6 @@
+#ifndef BASE_HPP
+#define BASE_HPP
+
 #include "tile.hpp"
 
 #include "raylib.h"
@@ -11,3 +14,5 @@ public:
 
     void Draw() { Tile::DrawRec(data.GetRec(), data.color); };
 };
+
+#endif

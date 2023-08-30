@@ -6,12 +6,36 @@
 `-r` for release build
 
 --------------------
+- main
+    - level
+        - grid
+            - grid helper
+        - terrain
+            - road
+            - base
+            - spawner
+            - platform
+        - unit
+            - tower
+                - bullet
+            - enemy
+                - path finding
+
+# Todo (refactor)
+- [x] Shooting enemy
+- [x] Move update terrain to `update_terrain.hpp` and unit to `update_unit.hpp`
+- [ ] Refactor and clean up first even if there bug, then fix the bug later
+
+# Todo (polish)
+- [ ] Create gridPosition and localPosition in `entity_data.hpp`
+- [ ] Make bullet have a pointer to tower that shoot it to give exp and detach bullet from tower
+    - Use signal instead
 
 # main (game)
 The main menu
 Pick level --go to--> level
 
-## Level Manager
+## Level Manager // delete level manager and just use level directly
 Generate level --pass--> gridMap
 
 handle update and draw.

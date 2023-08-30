@@ -1,6 +1,7 @@
 #include "path_finding.hpp"
 
 #include <vector>
+#include <algorithm>
 
 void PathFinding::SetGenerator(LevelData &map)
 {
@@ -16,25 +17,25 @@ void PathFinding::SetCollision(LevelData &map)
     auto AddWalls = [&walls, &map](const int x, const int y) 
     { 
         AStar::Vec2i below = {x, y + 1};
-        if (map[below.x][below.y] == TerrainID::EMPTY)
+        if (map[below.x][below.y] == TerrainID::EMPTY || map[below.x][below.x] == TerrainID::PLATFORM)
         {
             walls.push_back(below);
         }
 
         AStar::Vec2i right = {x + 1, y};
-        if (map[right.x][right.y] == TerrainID::EMPTY)
+        if (map[right.x][right.y] == TerrainID::EMPTY || map[right.x][right.y] == TerrainID::PLATFORM)
         {
             walls.push_back(right);
         }
 
         AStar::Vec2i above = {x, y - 1};
-        if (map[above.x][above.y] == TerrainID::EMPTY)
+        if (map[above.x][above.y] == TerrainID::EMPTY || map[above.x][above.y] == TerrainID::PLATFORM)
         {
             walls.push_back(above);
         }
 
         AStar::Vec2i left = {x - 1, y};
-        if (map[left.x][left.y] == TerrainID::EMPTY)
+        if (map[left.x][left.y] == TerrainID::EMPTY || map[left.x][left.y] == TerrainID::PLATFORM)
         {
             walls.push_back(left);
         }
@@ -45,6 +46,8 @@ void PathFinding::SetCollision(LevelData &map)
         for (int y = 0; y < map[x].size(); ++y)
         {
             if (map[x][y] == TerrainID::ROAD) AddWalls(x, y);
+            if (map[x][y] == TerrainID::SPAWNER) AddWalls(x, y);
+            if (map[x][y] == TerrainID::BASE) AddWalls(x, y);
         }
     }
 
@@ -56,5 +59,7 @@ void PathFinding::SetCollision(LevelData &map)
 
 AStar::CoordinateList PathFinding::GetPath(const AStar::Vec2i startPoint, const AStar::Vec2i endPoint)
 {
-    return generator.findPath(startPoint, endPoint);
+    auto path = generator.findPath(startPoint, endPoint);
+    std::reverse(path.begin(), path.end());
+    return path;
 };
