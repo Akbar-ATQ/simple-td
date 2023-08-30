@@ -26,26 +26,36 @@ enum class TerrainID
 
 using LevelData = std::vector<std::vector<TerrainID>>;
 
-struct Vec2i
+template<typename T>
+struct Vec2
 {
-    int x;
-    int y;
+    T x;
+    T y;
 
-    Vec2i() : x(0), y(0) {};
-    Vec2i(int x, int y) : x(x), y(y) {};
+    Vec2() : x(0), y(0) {};
+    Vec2(T x, T y) : x(x), y(y) {};
 
-    Vec2i operator+(const Vec2i& other) const { return Vec2i(x + other.x, y + other.y); };
-    Vec2i operator-(const Vec2i& other) const { return Vec2i(x - other.x, y - other.y); };
-    Vec2i operator*(const int scalar) const { return Vec2i(x * scalar, y * scalar); };
-    Vec2i operator/(const int divisor) const { return Vec2i(x / divisor, y / divisor); };
+    Vec2 operator+(const Vec2& other) const { return Vec2(x + other.x, y + other.y); };
+    Vec2 operator-(const Vec2& other) const { return Vec2(x - other.x, y - other.y); };
+    Vec2 operator*(const T scalar) const { return Vec2(x * scalar, y * scalar); };
+    Vec2 operator/(const T divisor) const { return Vec2(x / divisor, y / divisor); };
 
-    bool operator==(const Vec2i& other) const { return x == other.x && y == other.y; };
-    bool operator!=(const Vec2i& other) const { return !(*this == other); };
-    bool operator<(const Vec2i& other) const { return x < other.x && y < other.y; };
-    bool operator<=(const Vec2i& other) const { return x <= other.x && y <= other.y; };
-    bool operator>(const Vec2i& other) const { return x > other.x && y > other.y; };
-    bool operator>=(const Vec2i& other) const { return x >= other.x && y >= other.y; };
+    bool operator==(const Vec2& other) const { return x == other.x && y == other.y; };
+    bool operator!=(const Vec2& other) const { return !(*this == other); };
+    bool operator<(const Vec2& other) const { return x < other.x && y < other.y; };
+    bool operator<=(const Vec2& other) const { return x <= other.x && y <= other.y; };
+    bool operator>(const Vec2& other) const { return x > other.x && y > other.y; };
+    bool operator>=(const Vec2& other) const { return x >= other.x && y >= other.y; };
+
+    template <typename N>
+    Vec2<N> Cast() const { return { static_cast<N>(x), static_cast<N>(y) }; }
+
+    // Cast to Vector2 raylib
+    Vector2 CastVec2Ray() const { return {x, y}; };
 };
+
+using Vec2i = Vec2<int>;
+using Vec2f = Vec2<float>;
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
