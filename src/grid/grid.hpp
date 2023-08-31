@@ -25,6 +25,7 @@ public:
 
     TerrainID terrainId {TerrainID::EMPTY};
 
+    // consider using polymorph
     std::variant<
         std::shared_ptr<Base>,
         std::shared_ptr<Road>,

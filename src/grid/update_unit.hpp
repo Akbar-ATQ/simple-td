@@ -1,8 +1,9 @@
-#ifndef UPDATE_UNIT_HPP
-#define UPDATE_UNIT_HPP
+#ifndef GRID_UPDATE_UNIT_HPP
+#define GRID_UPDATE_UNIT_HPP
 
 #include "level.hpp"
 #include "grid.hpp"
+#include "grid_helper.hpp"
 
 void UpdateEnemies(Grid &grid, Level &level)
 {
@@ -17,7 +18,7 @@ void UpdateEnemies(Grid &grid, Level &level)
         {
             lockedEnemy->Update();
 
-            if (lockedEnemy->data.gridPosition.x != grid.position.x || lockedEnemy->data.gridPosition.y != grid.position.y)
+            if (lockedEnemy->gridPosition.x != grid.position.x || lockedEnemy->gridPosition.y != grid.position.y)
             {
                 enemiesToMove.push_back(lockedEnemy);
             }
@@ -33,8 +34,8 @@ void UpdateEnemies(Grid &grid, Level &level)
             auto lockedEnemy = enemyToMove.lock();
             if (lockedEnemy)
             {
-                int newX = lockedEnemy->data.gridPosition.x;
-                int newY = lockedEnemy->data.gridPosition.y;
+                int newX = lockedEnemy->gridPosition.x;
+                int newY = lockedEnemy->gridPosition.y;
                 level.map[newX][newY]->enemies.push_back(lockedEnemy);
             }
         }
@@ -48,8 +49,8 @@ void UpdateEnemies(Grid &grid, Level &level)
                         auto lockedEnemy = enemy.lock();
                         if (lockedEnemy)
                         {
-                            int newX = lockedEnemy->data.gridPosition.x;
-                            int newY = lockedEnemy->data.gridPosition.y;
+                            int newX = lockedEnemy->gridPosition.x;
+                            int newY = lockedEnemy->gridPosition.y;
                             return newX != grid.position.x || newY != grid.position.y;
                         }
                         else // enemy expired
@@ -73,14 +74,15 @@ void UpdateTower(Grid &grid, Level &level)
 
     std::shared_ptr<Tower> tower = grid.GetTerrain<Platform>()->GetTower();
     std::vector<std::shared_ptr<Enemy>> enemiesInRange;
+    int towerDetectionRange = static_cast<int>(tower->detectionRange);
 
     Vec2i startRange {
-        tower->data.position.x - tower->data.detectionRange,
-        tower->data.position.y - tower->data.detectionRange
+        tower->gridPosition.x - towerDetectionRange,
+        tower->gridPosition.y - towerDetectionRange
     };
     Vec2i endRange {
-        tower->data.position.x + tower->data.detectionRange,
-        tower->data.position.y + tower->data.detectionRange
+        tower->gridPosition.x + towerDetectionRange,
+        tower->gridPosition.y + towerDetectionRange
     };
 
     for (int x = startRange.x; x < endRange.x; ++x)
@@ -114,7 +116,7 @@ void UpdateBullets(Grid &grid, Level &level)
     for (auto& bullet : grid.bullets)
     {
         bullet->Update();
-        if (!Tile::CollisionInTile(bullet->pos, {grid.position.x, grid.position.y}))
+        if (bullet->gridPosition != grid.position)
             bulletsToMove.push_back(bullet);
     }
 
@@ -122,10 +124,11 @@ void UpdateBullets(Grid &grid, Level &level)
     {
         for (const auto& bulletToMove : bulletsToMove)
         {
-            int newX = static_cast<int>(bulletToMove->pos.x);
-            int newY = static_cast<int>(bulletToMove->pos.y);
+            int newX = bulletToMove->gridPosition.x;
+            int newY = bulletToMove->gridPosition.y;
 
-            if ((newX >= 0 && newY >= 0) && (newX < MAP_SIZE.x && newY < MAP_SIZE.y))
+            // if ((newX >= 0 && newY >= 0) && (newX < MAP_SIZE.x && newY < MAP_SIZE.y))
+            if (!GH::OutsideMap(bulletToMove->gridPosition))
                 level.map[newX][newY]->bullets.push_back(bulletToMove);
             else bulletToMove->RemoveFromTower(bulletToMove);
         }
@@ -136,8 +139,8 @@ void UpdateBullets(Grid &grid, Level &level)
                 level.map[grid.position.x][grid.position.y]->bullets.end(),
                 [grid](const std::shared_ptr<Tower::Bullet> bullet)
                     {
-                        int newX = static_cast<int>(bullet->pos.x);
-                        int newY = static_cast<int>(bullet->pos.y);
+                        int newX = bullet->gridPosition.x;
+                        int newY = bullet->gridPosition.y;
                         return newX != grid.position.x || newY != grid.position.y;
                     }),
             level.map[grid.position.x][grid.position.y]->bullets.end());
@@ -158,11 +161,12 @@ void HandleCollision(Grid &grid)
                 // the reason is because enemy can be between two grid cells but only one cell own it
                 // so there a possibility bullet will collided with enemy in neighbor cell
                 // but it don't participate in collision
-                if (CheckCollisionPointRec(bullet->pos, lockedEnemy->data.GetRec()))
-                {
-                    lockedEnemy->TakeDamage(bullet->damage);
-                    bullet->RemoveFromTower(bullet);
-                }
+                // merge grid and local and get the real position then collision check
+                // if (CheckCollisionPointRec(bullet->pos, lockedEnemy->data.GetRec()))
+                // {
+                //     lockedEnemy->TakeDamage(bullet->damage);
+                //     bullet->RemoveFromTower(bullet);
+                // }
             }
         }
     }

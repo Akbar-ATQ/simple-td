@@ -1,7 +1,7 @@
 #ifndef UI_HPP
 #define UI_HPP
 
-#include "tile.hpp"
+#include "grid_helper.hpp"
 #include "global_data.hpp"
 
 // #undef RAYGUI_IMPLEMENTATION
@@ -11,17 +11,19 @@
 namespace UI
 {
     const float sidePanelWidth {3.0f};
-    const Rectangle sidePanel {(MAP_SIZE.x - sidePanelWidth), 0, (TILE_SIZE * sidePanelWidth), SCREEN_HEIGHT};
-    const Rectangle closeButton {(sidePanel.x + 2) * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE};
+    const Vec2f sidePanelPos = {(MAP_SIZE.x - sidePanelWidth), 0};
+    const Rectangle sidePanel {sidePanelPos.x * GRID_SIZE, sidePanelPos.y, (GRID_SIZE * sidePanelWidth), SCREEN_HEIGHT};
+    const Rectangle closeButton {(sidePanelPos.x + 2) * GRID_SIZE, sidePanelPos.y, GRID_SIZE, GRID_SIZE};
 
     inline void SidePanel()
     {
-        Tile::DrawRec(sidePanel, BROWN);
+        GH::DrawRec(sidePanel, BROWN);
     };
 
     inline void SidePanelCloseButton(bool& toggle)
     {
-        if (GuiButton(closeButton, "Close")) toggle = false;
+        if (GuiButton(closeButton, "Close"))
+            toggle = false;
     };
 };
 

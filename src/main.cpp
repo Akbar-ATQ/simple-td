@@ -1,8 +1,8 @@
 #define RAYGUI_IMPLEMENTATION
 
-#include "tile.hpp"
-#include "global_data.hpp"
 #include "level.hpp"
+#include "grid_helper.hpp"
+#include "global_data.hpp"
 
 #include "raylib.h"
 
@@ -80,7 +80,7 @@ int main()
 
             ClearBackground(RAYWHITE);
 
-            Tile::Draw();
+            GH::Draw();
 
             level.Draw();
 

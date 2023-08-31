@@ -1,21 +1,19 @@
-#ifndef ENEMY_HPP
-#define ENEMY_HPP
+#ifndef UNIT_ENEMY_HPP
+#define UNIT_ENEMY_HPP
 
-#include "entity_data.hpp"
-#include "tile.hpp"
+#include "global_data.hpp"
+#include "grid_helper.hpp"
+#include "entity.hpp"
 
 #include "raylib.h"
 #include "AStar.hpp"
 
-// task:
-// make tower shoot enemy
-
-#include <iostream>
-
-class Enemy
+class Enemy : public Entity
 {
 public:
-    Enemy(Vector2 pos, AStar::CoordinateList& path) : data{pos, 20, RED, 5, 55.5}, m_path{path}
+    Enemy(Vec2i gridPos, Vec2f localPos, AStar::CoordinateList& path)
+    : Entity{gridPos, localPos, 20, RED},
+    m_path{path}
     {
         // [BUG]
         // when the path direction is changing, it don't perserve the original offset
@@ -30,19 +28,21 @@ public:
     };
     ~Enemy() = default;
 
-    struct Data : public MovingEntityData
-    {
-        Data(Vector2 pos, float size, Color color, int hp, float speed)
-        : MovingEntityData{pos, size, color}, hp{hp}, speed{speed} {};
+    // struct Data : public Entity
+    // {
+    //     Data(Vec2i gridPos, Vec2f localPos, float size, Color color, int hp, float speed)
+    //     : Entity{gridPos, localPos, size, color}, hp{hp}, speed{speed} {};
 
-        int hp;
-        float speed;
-    };
+    //     int hp;
+    //     float speed;
+    // };
+    int hp {5};
+    float speed {55};
 
-    Data data;
+    // Data data;
 
-    void TakeDamage(int damage) { data.hp -= damage; };
-    // void AddPath(const AStar::CoordinateList& path) { m_path.coordinate = path; };
+    void TakeDamage(int damage) { hp -= damage; };
+
     void Move()
     {
         if (m_path.index < m_path.coordinate.size())
@@ -50,48 +50,29 @@ public:
             int targetX = m_path.coordinate[m_path.index].x;
             int targetY = m_path.coordinate[m_path.index].y;
 
-
-            // if (static_cast<int>(data.position.x - (data.size / 100.0f)) != targetX)
-            // {
-            //     if (static_cast<int>(data.position.x - (data.size / 100.0f)) > targetX)
-            //         data.position.x -= data.speed * GetFrameTime();
-            //     else
-            //         data.position.x += data.speed * GetFrameTime();
-            // }
-            // else if (static_cast<int>(data.position.y - (data.size / 100.0f)) != targetY)
-            // {
-            //     if (static_cast<int>(data.position.y - (data.size / 100.0f)) > targetY)
-            //         data.position.y -= data.speed * GetFrameTime();
-            //     else
-            //         data.position.y += data.speed * GetFrameTime();
-            // }
-            // std::cout << "gridX: " << data.gridPosition.x << " targetX: " << targetX << " localX: " << data.localPosition.x << std::endl;
-            // std::cout << "gridY: " << data.gridPosition.y << " targetY: " << targetY << " localY: " << data.localPosition.y << std::endl;
-            if (data.gridPosition.x != targetX)
+            if (gridPosition.x != targetX)
             {
-                if (data.gridPosition.x > targetX)
-                    data.localPosition.x -= data.speed * GetFrameTime();
+                if (gridPosition.x > targetX)
+                    localPosition.x -= speed * GetFrameTime();
                 else
-                    data.localPosition.x += data.speed * GetFrameTime();
+                    localPosition.x += speed * GetFrameTime();
             }
-            else if (data.gridPosition.y != targetY)
+            else if (gridPosition.y != targetY)
             {
-                if (data.gridPosition.y > targetY)
-                    data.localPosition.y -= data.speed * GetFrameTime();
+                if (gridPosition.y > targetY)
+                    localPosition.y -= speed * GetFrameTime();
                 else
-                    data.localPosition.y += data.speed * GetFrameTime();
+                    localPosition.y += speed * GetFrameTime();
             }
 
-            if (data.localPosition.x > TILE_SIZE || data.localPosition.y > TILE_SIZE ||
-                data.localPosition.x < 0 || data.localPosition.y < 0
+            if (localPosition.x > GRID_SIZE || localPosition.y > GRID_SIZE ||
+                localPosition.x < 0 || localPosition.y < 0
                 )
             {
-                // std::cout << "gridX: " << data.gridPosition.x << " targetX: " << targetX << " localX: " << data.localPosition.x << std::endl;
-                // std::cout << "gridY: " << data.gridPosition.y << " targetY: " << targetY << " localY: " << data.localPosition.y << std::endl;
-                data.MoveGrid({targetX, targetY});
+                MoveGrid(this, {targetX, targetY});
             }
 
-            if (static_cast<int>(data.gridPosition.x) == targetX && static_cast<int>(data.gridPosition.y) == targetY)
+            if (gridPosition.x == targetX && gridPosition.y == targetY)
             {
                 m_path.index++;
             }
@@ -104,7 +85,7 @@ public:
     };
     void Draw()
     {
-        Tile::DrawRec(data.GetRec(), data.color);
+        GH::DrawRec(GetRec(), color);
     };
 
 private:

@@ -2,6 +2,7 @@
 #define EVENT_LIST_HPP
 
 #include "event_signal.hpp"
+#include "global_data.hpp"
 
 #include "raylib.h"
 
@@ -11,14 +12,14 @@ namespace Event
     {
         PlatformActivated() : EventType{"PlatformActivated"} {};
 
-        Vector2 position;
+        Vec2i gridPosition;
     };
 
     struct TowerAdded : public EventType
     {
         TowerAdded() : EventType{"TowerAdded"} {};
 
-        Vector2 position;
+        Vec2i gridPosition;
     };
 }
 

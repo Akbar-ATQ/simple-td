@@ -11,21 +11,19 @@
 // To prevent making Level::GenerateLevel too deep
 inline void GenerateTerrain(LevelData &levelData, Grid &grid, Level &level)
 {
-    const Vector2 currentPosition = {grid.position.x, grid.position.y};
-
     switch (levelData[grid.position.x][grid.position.y])
     {
         case TerrainID::ROAD:
         {
             grid.terrainId = TerrainID::ROAD;
-            grid.terrain = std::make_shared<Road>(currentPosition);
+            grid.terrain = std::make_shared<Road>(grid.position);
             break;
         }
         case TerrainID::PLATFORM:
         {
             grid.terrainId = TerrainID::PLATFORM;
 
-            std::shared_ptr<Platform> platform = std::make_shared<Platform>(currentPosition);
+            std::shared_ptr<Platform> platform = std::make_shared<Platform>(grid.position);
 
             level.listener->Connect<Event::PlatformActivated, Level>(Event::PlatformActivated(), &Level::OnPlatformActivated);
             level.listener->Connect(platform->eventEmitter);
@@ -36,15 +34,15 @@ inline void GenerateTerrain(LevelData &levelData, Grid &grid, Level &level)
         case TerrainID::SPAWNER:
         {
             grid.terrainId = TerrainID::SPAWNER;
-            grid.terrain = std::make_shared<Spawner>(currentPosition);
+            grid.terrain = std::make_shared<Spawner>(grid.position);
             break;
         }
         case TerrainID::BASE:
         {
             grid.terrainId = TerrainID::BASE;
-            grid.terrain = std::make_shared<Base>(currentPosition);
+            grid.terrain = std::make_shared<Base>(grid.position);
 
-            level.basePos = {grid.position.x, grid.position.y};
+            level.basePos = grid.position;
             break;
         }
     }
@@ -60,8 +58,6 @@ void Level::GenerateLevel(LevelData &levelData)
 
         for (int y = 0; y < MAP_SIZE.y; ++y)
         {
-            Vector2 currentPosition {static_cast<float>(x), static_cast<float>(y)};
-
             std::unique_ptr<Grid> grid = std::make_unique<Grid>(x, y);
 
             GenerateTerrain(levelData, *grid, *this);
@@ -75,14 +71,14 @@ void Level::GenerateLevel(LevelData &levelData)
 
 void Level::OnPlatformActivated(const Event::PlatformActivated platform)
 {
-    static Vector2 prevPlatformPos {platform.position};
+    static Vec2i prevPlatformPos {platform.gridPosition};
 
-    if (!Tile::CollisionInTile(prevPlatformPos, platform.position))
+    if (prevPlatformPos != platform.gridPosition)
     {
         map[prevPlatformPos.x][prevPlatformPos.y]->GetTerrain<Platform>()->Deactivate();
     }
 
-    prevPlatformPos = platform.position;
+    prevPlatformPos = platform.gridPosition;
 };
 
 void Level::Update()
@@ -104,7 +100,7 @@ void Level::Update()
     enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
         [](const auto &enemy)
             {
-                if (enemy->data.hp <= 0)
+                if (enemy->hp <= 0)
                     return true;
                 return false;
             }),

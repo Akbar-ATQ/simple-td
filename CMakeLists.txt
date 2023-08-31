@@ -4,9 +4,9 @@ project(simple-TD-V2)
 set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCES
-  ${PROJECT_SOURCE_DIR}/include/tile.cpp
   ${CMAKE_SOURCE_DIR}/src/main.cpp
   ${CMAKE_SOURCE_DIR}/src/level.cpp
+  ${CMAKE_SOURCE_DIR}/src/grid/grid_helper.cpp
   ${CMAKE_SOURCE_DIR}/src/unit/path_finding.cpp
 )
 

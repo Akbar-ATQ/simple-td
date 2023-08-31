@@ -1,7 +1,8 @@
-#ifndef TOWER_HPP
-#define TOWER_HPP
+#ifndef UNIT_TOWER_HPP
+#define UNIT_TOWER_HPP
 
-#include "entity_data.hpp"
+#include "grid_helper.hpp"
+#include "entity.hpp"
 #include "global_data.hpp"
 #include "ui.hpp"
 #include "enemy.hpp"
@@ -12,45 +13,63 @@
 #include <vector>
 #include <memory>
 
-#include <iostream>
-
-class Tower
+class Tower : public Entity
 {
 public:
-    Tower(Vector2 pos) : data{pos, GREEN} {};
+    Tower(Vec2i gridPos, Vec2f localPos)
+    : Entity{gridPos, localPos, GRID_SIZE, GREEN},
+    center{gridPos.Cast<float>().x + 0.5f, gridPos.Cast<float>().y + 0.5f}
+    {};
     ~Tower() = default;
 
-    struct Data : public EntityData
-    {
-        const Vector2 center;
+    // struct Data : public EntityData
+    // {
+    //     Data(Vec2i gridPos, Vec2f localPos, Color color)
+    //     : EntityData{gridPos, localPos, TILE_SIZE, color},
+    //     center{gridPos.Cast<float>().x + 0.5f, gridPos.Cast<float>().y + 0.5f}
+    //     {};
 
-        // ---------- Stats ---------- //
-        float detectionRange {4};
-        float attackTimer {0.0f};
-        float attackSpeed {0.2f};
-        float projectileSpeed {1.0f}; // 10.0 is the cap
-        float bulletDamage {1};
+    //     const Vec2f center;
 
-        Data(Vector2 pos, Color color) : EntityData{pos, TILE_SIZE, color}, center{pos.x + 0.5f, pos.y + 0.5f} {};
-    };
+    //     // ---------- Stats ---------- //
+    //     float detectionRange {4};
+    //     float attackTimer {0.0f};
+    //     float attackSpeed {0.2f};
+    //     float projectileSpeed {1.0f}; // 10.0 is the cap
+    //     float bulletDamage {1};
+    // };
+    const Vec2f center;
+
+    // ---------- Stats ---------- //
+    float detectionRange {4};
+    float attackTimer {0.0f};
+    float attackSpeed {0.2f};
+    float projectileSpeed {1.0f}; // 10.0 is the cap
+    float maxProjectileSpeed {10.0f};
+    float bulletDamage {1};
 
     struct Bullet
     {
         Bullet(Tower* tower) : tower{tower} {};
 
-        Vector2 pos;
-        Vector2 prevPos;
+        Vec2i gridPosition;
+        Vec2f localPosition;
+        Vec2i prevGridPosition;
+        Vec2f prevLocalPosition;
+
         float radius;
         float speed;
-        Vector2 velocity {0, 0};
-        Vector2 target;
+        Vec2f velocity {0, 0};
+        Vec2f target;
+
         float damage;
 
         void Update()
         {
-            prevPos = pos;
-            pos.x += velocity.x * speed;
-            pos.y += velocity.y * speed;
+            prevGridPosition = gridPosition;
+            prevLocalPosition = localPosition;
+            localPosition += velocity * speed;
+            // localPos.y += velocity.y * speed;
         };
 
         void RemoveFromTower(std::shared_ptr<Bullet> bullet) { tower->RemoveBullet(bullet); };
@@ -58,7 +77,7 @@ public:
         Tower* tower;
     };
 
-    Data data;
+    // Data data;
 
     // enum class Target
     // {
@@ -74,11 +93,11 @@ public:
     void DrawDetectionRange();
     void Draw()
     {
-        Tile::DrawRec(data.GetRec(), data.color);
+        GH::DrawRec(GetRec(), color);
 
         for (const auto& bullet : m_bullets)
         {
-            Tile::DrawCirc(bullet->pos, bullet->radius, BLACK);
+            GH::DrawCirc(GH::MergeReal(bullet->gridPosition, bullet->localPosition), bullet->radius, BLACK);
         }
     };
 
@@ -109,16 +128,16 @@ public:
         //     /* code to select target */
         // }
 
-        if (!enemiesInRange.empty())
-        {
-            target.position = enemiesInRange[0]->data.GetRealPos();
-            target.isExist = true;
-        }
-        else
-        {
-            target.position = {0, 0};
-            target.isExist = false;
-        }
+        // if (!enemiesInRange.empty())
+        // {
+        //     target.position = enemiesInRange[0]->data.GetRealPos();
+        //     target.isExist = true;
+        // }
+        // else
+        // {
+        //     target.position = {0, 0};
+        //     target.isExist = false;
+        // }
     };
     void Shoot(std::vector<std::shared_ptr<Enemy>> enemiesInRange)
     {
@@ -126,23 +145,25 @@ public:
 
         if (target.isExist)
         {
-            data.attackTimer += GetFrameTime();
-            if (data.attackTimer >= data.attackSpeed)
+            attackTimer += GetFrameTime();
+            if (attackTimer >= attackSpeed)
             {
-                data.attackTimer = 0.0f;
+                attackTimer = 0.0f;
 
-                std::shared_ptr<Bullet> bullet = std::make_shared<Bullet>(this);
-                bullet->pos = data.center;
-                bullet->prevPos = bullet->pos;
-                bullet->speed = data.projectileSpeed;
-                bullet->damage = data.bulletDamage;
-                bullet->radius = 1.0f / TILE_SIZE;
+                // std::shared_ptr<Bullet> bullet = std::make_shared<Bullet>(this);
+                // bullet->gridPosition = data.gridPosition;
+                // bullet->localPosition = data.center;
+                // bullet->prevLocalPosition = bullet->localPosition;
+                // bullet->speed = data.projectileSpeed;
+                // bullet->damage = data.bulletDamage;
+                // bullet->radius = 1.0f / TILE_SIZE;
 
-                Vector2 direction = Vector2Subtract(target.position, bullet->pos);
-                bullet->velocity = Vector2Normalize(direction);
-                bullet->velocity = {bullet->velocity.x / 10.0f, bullet->velocity.y / 10.0f};
+                // // [todo] need to rethink how to handle bullet movement/position
+                // Vector2 direction = target.position - bullet->localPosition;
+                // bullet->velocity = Vector2Normalize(direction);
+                // bullet->velocity = {bullet->velocity.x / 10.0f, bullet->velocity.y / 10.0f};
 
-                m_bullets.push_back(bullet);
+                // m_bullets.push_back(bullet);
             }
         }
     };
@@ -154,8 +175,8 @@ public:
     void DrawStat(std::string text, float stat)
     {
         DrawText(TextFormat("%s: %.3f", text.c_str(), stat),
-            Tile::RealPosition(UI::sidePanel.x),
-            Tile::RealPosition(UI::sidePanel.y + 2),
+            GH::RealPosition(UI::sidePanelPos.x),
+            GH::RealPosition(UI::sidePanelPos.y + 2),
             14,
             BLACK
         );
@@ -163,19 +184,19 @@ public:
     void StatusPanel()
     {
         UI::SidePanel();
-        DrawStat("Damage", data.bulletDamage);
+        DrawStat("Damage", bulletDamage);
     };
 
     void RemoveBullet(std::shared_ptr<Bullet> bullet)
     {
-        auto it = std::find_if(m_bullets.begin(), m_bullets.end(), [bullet](const std::shared_ptr<Bullet>& ptr) {
-            return ptr == bullet;
-        });
+        // auto it = std::find_if(m_bullets.begin(), m_bullets.end(), [bullet](const std::shared_ptr<Bullet>& ptr) {
+        //     return ptr == bullet;
+        // });
 
-        if (it != m_bullets.end())
-        {
-            m_bullets.erase(it);
-        }
+        // if (it != m_bullets.end())
+        // {
+        //     m_bullets.erase(it);
+        // }
     };
 
 private:
@@ -185,7 +206,7 @@ private:
     struct Target
     {
         bool isExist {false};
-        Vector2 position;
+        Vec2f position {0.0, 0.0};
     };
     Target target;
 

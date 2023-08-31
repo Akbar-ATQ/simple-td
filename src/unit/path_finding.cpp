@@ -18,36 +18,31 @@ void PathFinding::SetCollision(LevelData &map)
     { 
         AStar::Vec2i below = {x, y + 1};
         if (map[below.x][below.y] == TerrainID::EMPTY || map[below.x][below.x] == TerrainID::PLATFORM)
-        {
             walls.push_back(below);
-        }
 
         AStar::Vec2i right = {x + 1, y};
         if (map[right.x][right.y] == TerrainID::EMPTY || map[right.x][right.y] == TerrainID::PLATFORM)
-        {
             walls.push_back(right);
-        }
 
         AStar::Vec2i above = {x, y - 1};
         if (map[above.x][above.y] == TerrainID::EMPTY || map[above.x][above.y] == TerrainID::PLATFORM)
-        {
             walls.push_back(above);
-        }
 
         AStar::Vec2i left = {x - 1, y};
         if (map[left.x][left.y] == TerrainID::EMPTY || map[left.x][left.y] == TerrainID::PLATFORM)
-        {
             walls.push_back(left);
-        }
     };
 
     for (int x = 0; x < map.size(); ++x)
     {
         for (int y = 0; y < map[x].size(); ++y)
         {
-            if (map[x][y] == TerrainID::ROAD) AddWalls(x, y);
-            if (map[x][y] == TerrainID::SPAWNER) AddWalls(x, y);
-            if (map[x][y] == TerrainID::BASE) AddWalls(x, y);
+            if (map[x][y] == TerrainID::ROAD)
+                AddWalls(x, y);
+            if (map[x][y] == TerrainID::SPAWNER)
+                AddWalls(x, y);
+            if (map[x][y] == TerrainID::BASE)
+                AddWalls(x, y);
         }
     }
 

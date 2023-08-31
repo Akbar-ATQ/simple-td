@@ -1,5 +1,5 @@
-#ifndef PATHFINDING_HPP
-#define PATHFINDING_HPP
+#ifndef UNIT_PATH_FINDING_HPP
+#define UNIT_PATH_FINDING_HPP
 
 #include "global_data.hpp"
 

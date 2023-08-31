@@ -1,9 +1,10 @@
-#ifndef SPAWNER_HPP
-#define SPAWNER_HPP
+#ifndef TERRAIN_SPAWNER_HPP
+#define TERRAIN_SPAWNER_HPP
 
 #include "enemy.hpp"
-#include "entity_data.hpp"
+#include "entity.hpp"
 #include "global_data.hpp"
+#include "grid_helper.hpp"
 
 #include "level.hpp"
 
@@ -12,12 +13,12 @@
 
 #include <vector>
 
-class Spawner
+class Spawner : public Entity
 {
 public:
-    Spawner(Vector2 pos) : data{pos, TILE_SIZE, PURPLE} {};
+    Spawner(Vec2i gridPos) : Entity{gridPos, {0, 0}, GRID_SIZE, PURPLE} {};
 
-    EntityData data;
+    // EntityData data;
 
     struct Wave
     {
@@ -53,38 +54,19 @@ public:
         if (IsKeyPressed(KEY_S)) wave.start = true;
     };
 
-    void Draw() { Tile::DrawRec(data.GetRec(), data.color); };
+    void Draw() { GH::DrawRec(GetRec(), color); };
 
-    void NewGenerateEnemy(std::vector<std::shared_ptr<Enemy>> &enemies, AStar::CoordinateList &path)
+    void GenerateEnemy(std::vector<std::shared_ptr<Enemy>> &enemies, AStar::CoordinateList &path)
     {
         timer += GetFrameTime();
         if (timer >= wave.interval)
         {
-            Vector2 enemyStartingPosition {data.position.x + (GetRandomValue(0, 15) / 100.0f), data.position.y + (GetRandomValue(5, 40) / 100.0f)};
+            // Vector2 enemyStartingPosition {data.gridPosition.x + (GetRandomValue(0, 15) / 100.0f), data.gridPosition.y + (GetRandomValue(5, 40) / 100.0f)};
+            Vec2i enemyGridPos = gridPosition;
+            Vec2f enemyGridLocalPos {static_cast<float>(GetRandomValue(5, 15)), static_cast<float>(GetRandomValue(5, 15))};
 
-            std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>(enemyStartingPosition, path);
+            std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>(enemyGridPos, enemyGridLocalPos, path);
             enemies.push_back(enemy);
-
-            generatedEnemy += 1;
-            timer = 0.0f;
-            if (generatedEnemy >= wave.enemies)
-            {
-                generatedEnemy = 0;
-                wave.inProgress = false;
-            }
-        }
-    };
-
-    void GenerateEnemy(std::vector<std::weak_ptr<Enemy>> &levelEnemies, std::vector<std::shared_ptr<Enemy>> &enemies, AStar::CoordinateList &path)
-    {
-        timer += GetFrameTime();
-        if (timer >= wave.interval)
-        {
-            Vector2 enemyStartingPosition {data.position.x + (GetRandomValue(0, 15) / 100.0f), data.position.y + (GetRandomValue(5, 40) / 100.0f)};
-
-            std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>(enemyStartingPosition, path);
-            enemies.push_back(enemy);
-            levelEnemies.push_back(enemy);
 
             generatedEnemy += 1;
             timer = 0.0f;

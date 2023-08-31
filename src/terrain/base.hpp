@@ -1,18 +1,21 @@
-#ifndef BASE_HPP
-#define BASE_HPP
+#ifndef TERRAIN_BASE_HPP
+#define TERRAIN_BASE_HPP
 
-#include "tile.hpp"
+#include "entity.hpp"
+#include "grid_helper.hpp"
+#include "global_data.hpp"
 
 #include "raylib.h"
 
-class Base
+class Base : public Entity
 {
 public:
-    Base(Vector2 pos) : data{pos, TILE_SIZE, RED} {};
+    Base(Vec2i gridPos) : Entity{gridPos, {0, 0}, GRID_SIZE, RED} {};
 
-    EntityData data;
-
-    void Draw() { Tile::DrawRec(data.GetRec(), data.color); };
+    void Draw()
+    {
+        GH::DrawRec(GetRec(), color);
+    };
 };
 
 #endif

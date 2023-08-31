@@ -1,5 +1,5 @@
-#ifndef UPDATE_TERRAIN_HPP
-#define UPDATE_TERRAIN_HPP
+#ifndef GRID_UPDATE_TERRAIN_HPP
+#define GRID_UPDATE_TERRAIN_HPP
 
 #include "level.hpp"
 
@@ -10,12 +10,12 @@ void UpdateSpawner(const std::shared_ptr<Spawner> spawner, Level &level, Grid &g
     {
         // [todo] make the spawner hold base position
         auto path = level.pathFinding.GetPath(
-            {static_cast<int>(spawner->data.position.x), static_cast<int>(spawner->data.position.y)},
-            {static_cast<int>(level.basePos.x), static_cast<int>(level.basePos.y)}
+            {spawner->gridPosition.x, spawner->gridPosition.y},
+            {level.basePos.x, level.basePos.y}
         );
         std::vector<std::shared_ptr<Enemy>> enemies;
 
-        spawner->NewGenerateEnemy(enemies, path);
+        spawner->GenerateEnemy(enemies, path);
 
         for (auto& enemy : enemies)
         {
