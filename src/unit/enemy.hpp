@@ -50,29 +50,29 @@ public:
             int targetX = m_path.coordinate[m_path.index].x;
             int targetY = m_path.coordinate[m_path.index].y;
 
-            if (gridPosition.x != targetX)
+            if (position.grid.x != targetX)
             {
-                if (gridPosition.x > targetX)
-                    localPosition.x -= speed * GetFrameTime();
+                if (position.grid.x > targetX)
+                    position.local.x -= speed * GetFrameTime();
                 else
-                    localPosition.x += speed * GetFrameTime();
+                    position.local.x += speed * GetFrameTime();
             }
-            else if (gridPosition.y != targetY)
+            else if (position.grid.y != targetY)
             {
-                if (gridPosition.y > targetY)
-                    localPosition.y -= speed * GetFrameTime();
+                if (position.grid.y > targetY)
+                    position.local.y -= speed * GetFrameTime();
                 else
-                    localPosition.y += speed * GetFrameTime();
+                    position.local.y += speed * GetFrameTime();
             }
 
-            if (localPosition.x > GRID_SIZE || localPosition.y > GRID_SIZE ||
-                localPosition.x < 0 || localPosition.y < 0
+            if (position.local.x > GRID_SIZE || position.local.y > GRID_SIZE ||
+                position.local.x < 0 || position.local.y < 0
                 )
             {
                 MoveGrid(this, {targetX, targetY});
             }
 
-            if (gridPosition.x == targetX && gridPosition.y == targetY)
+            if (position.grid.x == targetX && position.grid.y == targetY)
             {
                 m_path.index++;
             }

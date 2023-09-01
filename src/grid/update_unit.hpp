@@ -18,7 +18,7 @@ void UpdateEnemies(Grid &grid, Level &level)
         {
             lockedEnemy->Update();
 
-            if (lockedEnemy->gridPosition.x != grid.position.x || lockedEnemy->gridPosition.y != grid.position.y)
+            if (lockedEnemy->position.grid.x != grid.position.x || lockedEnemy->position.grid.y != grid.position.y)
             {
                 enemiesToMove.push_back(lockedEnemy);
             }
@@ -34,8 +34,8 @@ void UpdateEnemies(Grid &grid, Level &level)
             auto lockedEnemy = enemyToMove.lock();
             if (lockedEnemy)
             {
-                int newX = lockedEnemy->gridPosition.x;
-                int newY = lockedEnemy->gridPosition.y;
+                int newX = lockedEnemy->position.grid.x;
+                int newY = lockedEnemy->position.grid.y;
                 level.map[newX][newY]->enemies.push_back(lockedEnemy);
             }
         }
@@ -49,8 +49,8 @@ void UpdateEnemies(Grid &grid, Level &level)
                         auto lockedEnemy = enemy.lock();
                         if (lockedEnemy)
                         {
-                            int newX = lockedEnemy->gridPosition.x;
-                            int newY = lockedEnemy->gridPosition.y;
+                            int newX = lockedEnemy->position.grid.x;
+                            int newY = lockedEnemy->position.grid.y;
                             return newX != grid.position.x || newY != grid.position.y;
                         }
                         else // enemy expired
@@ -77,12 +77,12 @@ void UpdateTower(Grid &grid, Level &level)
     int towerDetectionRange = static_cast<int>(tower->detectionRange);
 
     Vec2i startRange {
-        tower->gridPosition.x - towerDetectionRange,
-        tower->gridPosition.y - towerDetectionRange
+        tower->position.grid.x - towerDetectionRange,
+        tower->position.grid.y - towerDetectionRange
     };
     Vec2i endRange {
-        tower->gridPosition.x + towerDetectionRange,
-        tower->gridPosition.y + towerDetectionRange
+        tower->position.grid.x + towerDetectionRange,
+        tower->position.grid.y + towerDetectionRange
     };
 
     for (int x = startRange.x; x < endRange.x; ++x)
@@ -116,7 +116,7 @@ void UpdateBullets(Grid &grid, Level &level)
     for (auto& bullet : grid.bullets)
     {
         bullet->Update();
-        if (bullet->gridPosition != grid.position)
+        if (bullet->position.grid != grid.position)
             bulletsToMove.push_back(bullet);
     }
 
@@ -124,11 +124,11 @@ void UpdateBullets(Grid &grid, Level &level)
     {
         for (const auto& bulletToMove : bulletsToMove)
         {
-            int newX = bulletToMove->gridPosition.x;
-            int newY = bulletToMove->gridPosition.y;
+            int newX = bulletToMove->position.grid.x;
+            int newY = bulletToMove->position.grid.y;
 
             // if ((newX >= 0 && newY >= 0) && (newX < MAP_SIZE.x && newY < MAP_SIZE.y))
-            if (!GH::OutsideMap(bulletToMove->gridPosition))
+            if (!GH::OutsideMap(bulletToMove->position.grid))
                 level.map[newX][newY]->bullets.push_back(bulletToMove);
             else bulletToMove->RemoveFromTower(bulletToMove);
         }
@@ -139,8 +139,8 @@ void UpdateBullets(Grid &grid, Level &level)
                 level.map[grid.position.x][grid.position.y]->bullets.end(),
                 [grid](const std::shared_ptr<Tower::Bullet> bullet)
                     {
-                        int newX = bullet->gridPosition.x;
-                        int newY = bullet->gridPosition.y;
+                        int newX = bullet->position.grid.x;
+                        int newY = bullet->position.grid.y;
                         return newX != grid.position.x || newY != grid.position.y;
                     }),
             level.map[grid.position.x][grid.position.y]->bullets.end());

@@ -61,11 +61,11 @@ public:
         timer += GetFrameTime();
         if (timer >= wave.interval)
         {
-            // Vector2 enemyStartingPosition {data.gridPosition.x + (GetRandomValue(0, 15) / 100.0f), data.gridPosition.y + (GetRandomValue(5, 40) / 100.0f)};
-            Vec2i enemyGridPos = gridPosition;
-            Vec2f enemyGridLocalPos {static_cast<float>(GetRandomValue(5, 15)), static_cast<float>(GetRandomValue(5, 15))};
+            // Vector2 enemyStartingPosition {data.position.grid.x + (GetRandomValue(0, 15) / 100.0f), data.position.grid.y + (GetRandomValue(5, 40) / 100.0f)};
+            Vec2i enemyGridPos = position.grid;
+            Vec2f enemyLocalPos {static_cast<float>(GetRandomValue(5, 15)), static_cast<float>(GetRandomValue(5, 15))};
 
-            std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>(enemyGridPos, enemyGridLocalPos, path);
+            std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>(enemyGridPos, enemyLocalPos, path);
             enemies.push_back(enemy);
 
             generatedEnemy += 1;

@@ -12,14 +12,14 @@ namespace Event
     {
         PlatformActivated() : EventType{"PlatformActivated"} {};
 
-        Vec2i gridPosition;
+        Position position;
     };
 
     struct TowerAdded : public EventType
     {
         TowerAdded() : EventType{"TowerAdded"} {};
 
-        Vec2i gridPosition;
+        Position position;
     };
 }
 

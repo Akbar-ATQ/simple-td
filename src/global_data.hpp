@@ -53,6 +53,12 @@ struct Vec2
 using Vec2i = Vec2<int>;
 using Vec2f = Vec2<float>;
 
+struct Position
+{
+    Vec2i grid;
+    Vec2f local; // Position inside grid.
+};
+
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 

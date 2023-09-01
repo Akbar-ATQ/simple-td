@@ -7,8 +7,6 @@
 #include "update_terrain.hpp"
 #include "update_unit.hpp"
 
-// Break it from Level::GenerateLevel
-// To prevent making Level::GenerateLevel too deep
 inline void GenerateTerrain(LevelData &levelData, Grid &grid, Level &level)
 {
     switch (levelData[grid.position.x][grid.position.y])
@@ -71,14 +69,14 @@ void Level::GenerateLevel(LevelData &levelData)
 
 void Level::OnPlatformActivated(const Event::PlatformActivated platform)
 {
-    static Vec2i prevPlatformPos {platform.gridPosition};
+    static Vec2i prevPlatformGrid {platform.position.grid};
 
-    if (prevPlatformPos != platform.gridPosition)
+    if (prevPlatformGrid != platform.position.grid)
     {
-        map[prevPlatformPos.x][prevPlatformPos.y]->GetTerrain<Platform>()->Deactivate();
+        map[prevPlatformGrid.x][prevPlatformGrid.y]->GetTerrain<Platform>()->Deactivate();
     }
 
-    prevPlatformPos = platform.gridPosition;
+    prevPlatformGrid = platform.position.grid;
 };
 
 void Level::Update()

@@ -56,12 +56,12 @@ public:
 
         // DrawText(TextFormat("Coins: %i", towerPrice), tower.data.position.x * TILE_SIZE, ((tower.data.position.y + 1) * TILE_SIZE), 20, BLACK);
 
-        if (GH::ClickGrid(towerPanel.gridPosition))
+        if (GH::ClickGrid(towerPanel.position.grid))
         {
-            tower = std::make_shared<Tower>(gridPosition, localPosition);
+            tower = std::make_shared<Tower>(position.grid, position.local);
 
             Event::TowerAdded towerAdded;
-            towerAdded.gridPosition = gridPosition;
+            towerAdded.position.grid = position.grid;
             eventEmitter->Emit(towerAdded);
         }
     };
@@ -78,12 +78,12 @@ public:
 
     void ActivateOnClick()
     {
-        if (GH::ClickGrid(gridPosition))
+        if (GH::ClickGrid(position.grid))
         {
             Activate();
 
             Event::PlatformActivated platformActivated;
-            platformActivated.gridPosition = gridPosition;
+            platformActivated.position.grid = position.grid;
             eventEmitter->Emit(platformActivated);
         }
     };

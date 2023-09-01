@@ -10,7 +10,7 @@ void UpdateSpawner(const std::shared_ptr<Spawner> spawner, Level &level, Grid &g
     {
         // [todo] make the spawner hold base position
         auto path = level.pathFinding.GetPath(
-            {spawner->gridPosition.x, spawner->gridPosition.y},
+            {spawner->position.grid.x, spawner->position.grid.y},
             {level.basePos.x, level.basePos.y}
         );
         std::vector<std::shared_ptr<Enemy>> enemies;

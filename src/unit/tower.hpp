@@ -52,10 +52,8 @@ public:
     {
         Bullet(Tower* tower) : tower{tower} {};
 
-        Vec2i gridPosition;
-        Vec2f localPosition;
-        Vec2i prevGridPosition;
-        Vec2f prevLocalPosition;
+        Position position;
+        Position prevPosition;
 
         float radius;
         float speed;
@@ -66,9 +64,9 @@ public:
 
         void Update()
         {
-            prevGridPosition = gridPosition;
-            prevLocalPosition = localPosition;
-            localPosition += velocity * speed;
+            // prevposition.grid = position.grid;
+            // prevLocalPosition = position.local;
+            // position.local += velocity * speed;
             // localPos.y += velocity.y * speed;
         };
 
@@ -97,7 +95,7 @@ public:
 
         for (const auto& bullet : m_bullets)
         {
-            GH::DrawCirc(GH::MergeReal(bullet->gridPosition, bullet->localPosition), bullet->radius, BLACK);
+            GH::DrawCirc(GH::MergeReal(bullet->position.grid, bullet->position.local), bullet->radius, BLACK);
         }
     };
 
@@ -151,15 +149,15 @@ public:
                 attackTimer = 0.0f;
 
                 // std::shared_ptr<Bullet> bullet = std::make_shared<Bullet>(this);
-                // bullet->gridPosition = data.gridPosition;
-                // bullet->localPosition = data.center;
-                // bullet->prevLocalPosition = bullet->localPosition;
+                // bullet->position.grid = data.position.grid;
+                // bullet->position.local = data.center;
+                // bullet->prevLocalPosition = bullet->position.local;
                 // bullet->speed = data.projectileSpeed;
                 // bullet->damage = data.bulletDamage;
                 // bullet->radius = 1.0f / TILE_SIZE;
 
                 // // [todo] need to rethink how to handle bullet movement/position
-                // Vector2 direction = target.position - bullet->localPosition;
+                // Vector2 direction = target.position - bullet->position.local;
                 // bullet->velocity = Vector2Normalize(direction);
                 // bullet->velocity = {bullet->velocity.x / 10.0f, bullet->velocity.y / 10.0f};
 
