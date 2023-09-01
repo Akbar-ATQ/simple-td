@@ -10,7 +10,7 @@
 class Road : public Entity
 {
 public:
-    Road(Vec2i gridPos) : Entity{gridPos, {0, 0}, GRID_SIZE, BLUE} {};
+    Road(Vec2i gridPos) : Entity{Position{gridPos, {0, 0}}, GRID_SIZE, BLUE} {};
 
     void Draw()
     {

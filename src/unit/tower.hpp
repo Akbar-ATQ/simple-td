@@ -17,7 +17,7 @@ class Tower : public Entity
 {
 public:
     Tower(Vec2i gridPos, Vec2f localPos)
-    : Entity{gridPos, localPos, GRID_SIZE, GREEN},
+    : Entity{Position{gridPos, localPos}, GRID_SIZE, GREEN},
     center{gridPos.Cast<float>().x + 0.5f, gridPos.Cast<float>().y + 0.5f}
     {};
     ~Tower() = default;

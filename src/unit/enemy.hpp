@@ -12,7 +12,7 @@ class Enemy : public Entity
 {
 public:
     Enemy(Vec2i gridPos, Vec2f localPos, AStar::CoordinateList& path)
-    : Entity{gridPos, localPos, 20, RED},
+    : Entity{Position{gridPos, localPos}, 20, RED},
     m_path{path}
     {
         // [BUG]

@@ -12,11 +12,11 @@ set(SOURCES
 
 add_executable(main ${SOURCES})
 
-include_directories(SYSTEM "${PROJECT_SOURCE_DIR}/include_external")
+include_directories(SYSTEM "${PROJECT_SOURCE_DIR}/third_party")
 
 target_include_directories(main PUBLIC
-    ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/include_external
+    ${PROJECT_SOURCE_DIR}/lib
+    ${PROJECT_SOURCE_DIR}/third_party
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/src/grid
     ${PROJECT_SOURCE_DIR}/src/terrain
@@ -24,9 +24,8 @@ target_include_directories(main PUBLIC
 )
 
 target_link_libraries(main
-    ${CMAKE_SOURCE_DIR}/lib/libraylib.a
-    ${CMAKE_SOURCE_DIR}/lib/liba-star.a
-    ${CMAKE_SOURCE_DIR}/lib/libQuadTree.a
+    ${CMAKE_SOURCE_DIR}/static_lib/libraylib.a
+    ${CMAKE_SOURCE_DIR}/static_lib/liba-star.a
     winmm
     opengl32
 )

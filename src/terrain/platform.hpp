@@ -18,7 +18,7 @@
 class Platform : public Entity
 {
 public:
-    Platform(Vec2i gridPos) : Entity{gridPos, {0, 0}, GRID_SIZE, BLACK} {};
+    Platform(Vec2i gridPos) : Entity{Position{gridPos, {0, 0}}, GRID_SIZE, BLACK} {};
     ~Platform() = default;
 
     // EntityData data;
