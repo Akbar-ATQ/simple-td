@@ -29,9 +29,9 @@ namespace GH
 
     // Merge grid and local position then get the real position is quite common.
     Vec2f MergeReal(const Vec2i gridPos, const Vec2f localPos);
+    Vec2f MergeReal(const Position &position);
 
     bool OutsideMap(const int x, const int y);
-    bool OutsideMap(const Vec2i gridPos);
 
     bool ClickGrid(const Vec2i gridPos);
 

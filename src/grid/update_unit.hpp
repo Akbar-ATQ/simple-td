@@ -60,14 +60,6 @@ void UpdateEnemies(Grid &grid, Level &level)
     }
 };
 
-// move it to some other place later
-bool OutsideMap(const int x, const int y)
-{
-    if (x < 0 || y < 0 || x > MAP_SIZE.x || y > MAP_SIZE.y)
-        return true;
-    return false;
-};
-
 void UpdateTower(Grid &grid, Level &level)
 {
     // [Idea] make enemy have int id to make it easy targeting first/last
@@ -89,7 +81,7 @@ void UpdateTower(Grid &grid, Level &level)
     {
         for (int y = startRange.y; y < endRange.y; ++y)
         {
-            if (!OutsideMap(x, y) && level.map[x][y]->terrainId == TerrainID::ROAD && !level.map[x][y]->enemies.empty())
+            if (!GH::OutsideMap(x, y) && level.map[x][y]->terrainId == TerrainID::ROAD && !level.map[x][y]->enemies.empty())
             {
                 for (auto& enemy : level.map[x][y]->enemies)
                 {
@@ -105,14 +97,13 @@ void UpdateTower(Grid &grid, Level &level)
     tower->Shoot(enemiesInRange);
     if (!tower->GetBullets().empty())
     {
-        std::vector<std::shared_ptr<Tower::Bullet>> towerBullets = tower->GetBullets();
-        grid.bullets.insert(grid.bullets.end(), towerBullets.begin(), towerBullets.end());
+        tower->MoveBullets(grid.bullets);
     }
 };
 
 void UpdateBullets(Grid &grid, Level &level)
 {
-    std::vector<std::shared_ptr<Tower::Bullet>> bulletsToMove;
+    std::vector<std::shared_ptr<Bullet>> bulletsToMove;
     for (auto& bullet : grid.bullets)
     {
         bullet->Update();
@@ -122,53 +113,89 @@ void UpdateBullets(Grid &grid, Level &level)
 
     if (!bulletsToMove.empty())
     {
-        for (const auto& bulletToMove : bulletsToMove)
+        for (auto& bulletToMove : bulletsToMove)
         {
             int newX = bulletToMove->position.grid.x;
             int newY = bulletToMove->position.grid.y;
 
-            // if ((newX >= 0 && newY >= 0) && (newX < MAP_SIZE.x && newY < MAP_SIZE.y))
-            if (!GH::OutsideMap(bulletToMove->position.grid))
+            if (!GH::OutsideMap(newX, newY))
+            {
                 level.map[newX][newY]->bullets.push_back(bulletToMove);
-            else bulletToMove->RemoveFromTower(bulletToMove);
+            }
         }
 
         level.map[grid.position.x][grid.position.y]->bullets.erase(
             std::remove_if(
                 level.map[grid.position.x][grid.position.y]->bullets.begin(),
                 level.map[grid.position.x][grid.position.y]->bullets.end(),
-                [grid](const std::shared_ptr<Tower::Bullet> bullet)
+                [grid](const std::shared_ptr<Bullet> bullet)
                     {
-                        int newX = bullet->position.grid.x;
-                        int newY = bullet->position.grid.y;
-                        return newX != grid.position.x || newY != grid.position.y;
+                        return bullet->position.grid.x != grid.position.x || bullet->position.grid.y != grid.position.y;
                     }),
             level.map[grid.position.x][grid.position.y]->bullets.end());
     }
 };
 
-void HandleCollision(Grid &grid)
+void HandleCollision(Grid &grid, Level &level)
 {
-    for (auto &enemy : grid.enemies)
+    // Bullet take enemies in grid cells around it and check collision against it.
+    // the reason is because enemy can be between two grid cells but only one cell own it,
+    // so there a possibility bullet will collided with enemy in neighboor cell
+    // but it don't participate in collision
+    std::vector<std::shared_ptr<Bullet>> removedBullets;
+
+    for (auto &bullet : grid.bullets)
     {
-        for (auto &bullet : grid.bullets)
+        std::vector<Vec2i> neighboorCells = {
+            {bullet->position.grid.x - 1, bullet->position.grid.y},
+            {bullet->position.grid.x + 1, bullet->position.grid.y},
+            {bullet->position.grid.x, bullet->position.grid.y - 1},
+            {bullet->position.grid.x, bullet->position.grid.y + 1}
+        };
+
+        std::vector<std::weak_ptr<Enemy>> enemies;
+
+        if (!grid.enemies.empty())
+        {
+            for (auto &enemy : grid.enemies)
+            {
+                enemies.push_back(enemy);
+            }
+        }
+
+        for (const auto &neighboor : neighboorCells)
+        {
+            if (!GH::OutsideMap(neighboor.x, neighboor.y) && !level.map[neighboor.x][neighboor.y]->enemies.empty())
+            {
+                for (auto &enemy : level.map[neighboor.x][neighboor.y]->enemies)
+                {
+                    enemies.push_back(enemy);
+                }
+            }
+        }
+
+        for (auto &enemy : enemies)
         {
             auto lockedEnemy = enemy.lock();
             if (lockedEnemy)
             {
-                // [todo] [improvement]
-                // bullet take enemies in grid cells around it and check collision against it
-                // the reason is because enemy can be between two grid cells but only one cell own it
-                // so there a possibility bullet will collided with enemy in neighbor cell
-                // but it don't participate in collision
-                // merge grid and local and get the real position then collision check
-                // if (CheckCollisionPointRec(bullet->pos, lockedEnemy->data.GetRec()))
-                // {
-                //     lockedEnemy->TakeDamage(bullet->damage);
-                //     bullet->RemoveFromTower(bullet);
-                // }
+                if (CheckCollisionPointRec(GH::MergeReal(bullet->position).CastVec2Ray(), lockedEnemy->GetRec()))
+                {
+                    lockedEnemy->TakeDamage(bullet->damage);
+                    removedBullets.push_back(bullet);
+                }
             }
         }
+    }
+
+    if (!removedBullets.empty())
+    {
+        auto isRemoved = [&removedBullets](const std::shared_ptr<Bullet> &bullet)
+        {
+            return std::find(removedBullets.begin(), removedBullets.end(), bullet) != removedBullets.end();
+        };
+
+        grid.bullets.erase(std::remove_if(grid.bullets.begin(), grid.bullets.end(), isRemoved), grid.bullets.end());
     }
 };
 
@@ -184,7 +211,7 @@ void UpdateUnit(Grid &grid, Level &level)
         UpdateBullets(grid, level);
 
     if (!grid.enemies.empty() && !grid.bullets.empty())
-        HandleCollision(grid);
+        HandleCollision(grid, level);
 };
 
 #endif

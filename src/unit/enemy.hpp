@@ -12,43 +12,29 @@ class Enemy : public Entity
 {
 public:
     Enemy(Vec2i gridPos, Vec2f localPos, AStar::CoordinateList& path)
-    : Entity{Position{gridPos, localPos}, 20, RED},
-    m_path{path}
-    {
-        // [BUG]
-        // when the path direction is changing, it don't perserve the original offset
-        // the result is the enemies look like lining and don't look very good
-        // for (auto& coordinate : path)
-        // {
-        //     m_path.coordinate.push_back({
-        //         coordinate.x + (m_rec.x - std::floor(m_rec.x)),
-        //         coordinate.y + (m_rec.y - std::floor(m_rec.y))
-        //     });
-        // }
-    };
+    : Entity{Position{gridPos, localPos}, 20, RED}, path{path}
+    {};
     ~Enemy() = default;
 
-    // struct Data : public Entity
-    // {
-    //     Data(Vec2i gridPos, Vec2f localPos, float size, Color color, int hp, float speed)
-    //     : Entity{gridPos, localPos, size, color}, hp{hp}, speed{speed} {};
-
-    //     int hp;
-    //     float speed;
-    // };
     int hp {5};
     float speed {55};
 
-    // Data data;
+    Vec2f GetCenter()
+    {
+        return {position.local.x + (size / 2), position.local.y + (size / 2)};
+    };
 
     void TakeDamage(int damage) { hp -= damage; };
 
     void Move()
     {
-        if (m_path.index < m_path.coordinate.size())
+        // [BUG]
+        // when the path direction is changing, it don't perserve the original offset
+        // the result is the enemies look like lining and don't look very good
+        if (path.index < path.coordinate.size())
         {
-            int targetX = m_path.coordinate[m_path.index].x;
-            int targetY = m_path.coordinate[m_path.index].y;
+            int targetX = path.coordinate[path.index].x;
+            int targetY = path.coordinate[path.index].y;
 
             if (position.grid.x != targetX)
             {
@@ -66,15 +52,14 @@ public:
             }
 
             if (position.local.x > GRID_SIZE || position.local.y > GRID_SIZE ||
-                position.local.x < 0 || position.local.y < 0
-                )
+                position.local.x < 0 || position.local.y < 0)
             {
                 MoveGrid(this, {targetX, targetY});
             }
 
             if (position.grid.x == targetX && position.grid.y == targetY)
             {
-                m_path.index++;
+                path.index++;
             }
         }
     };
@@ -94,7 +79,7 @@ private:
         AStar::CoordinateList coordinate;
         int index {0};
     };
-    Path m_path;
+    Path path;
 };
 
 #endif

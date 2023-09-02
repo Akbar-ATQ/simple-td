@@ -137,6 +137,10 @@ void Level::Draw()
             if (!map[x][y]->IsEmpty())
             {
                 DrawTerrain(*map[x][y]);
+                for (const auto &bullet : map[x][y]->bullets)
+                {
+                    bullet->Draw();
+                }
             }
         }
     }

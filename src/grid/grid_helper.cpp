@@ -38,7 +38,7 @@ void GH::DrawRecInCenter(const Rectangle rec, const Color color)
 
 void GH::DrawCirc(const Vec2f v, const float radius, const Color color)
 {
-    DrawCircle(v.x * GRID_SIZE, v.y * GRID_SIZE, radius * GRID_SIZE, color);
+    DrawCircle(v.x * GRID_SIZE, v.y * GRID_SIZE, radius, color);
 };
 
 void GH::DrawCircLines(const Vec2f v, const float radius, const Color color)
@@ -86,16 +86,14 @@ Vec2f GH::MergeReal(const Vec2i gridPos, const Vec2f localPos)
     return RealPosition(MergeGridLocalPosition(gridPos, localPos));
 };
 
-bool GH::OutsideMap(const int x, const int y)
+Vec2f GH::MergeReal(const Position &position)
 {
-    if (x < 0 || y < 0 || x > MAP_SIZE.x || y > MAP_SIZE.y)
-        return true;
-    return false;
+    return RealPosition(MergeGridLocalPosition(position.grid, position.local));
 };
 
-bool GH::OutsideMap(const Vec2i gridPos)
+bool GH::OutsideMap(const int x, const int y)
 {
-    if (gridPos < Vec2i{0, 0} || gridPos > MAP_SIZE)
+    if (x < 0 || y < 0 || x >= MAP_SIZE.x || y >= MAP_SIZE.y)
         return true;
     return false;
 };

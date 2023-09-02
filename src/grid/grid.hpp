@@ -34,7 +34,7 @@ public:
     > terrain;
 
     std::vector<std::weak_ptr<Enemy>> enemies;
-    std::vector<std::shared_ptr<Tower::Bullet>> bullets;
+    std::vector<std::shared_ptr<Bullet>> bullets;
 
     // ------------------------------ //
 

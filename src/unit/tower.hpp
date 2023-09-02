@@ -6,6 +6,7 @@
 #include "global_data.hpp"
 #include "ui.hpp"
 #include "enemy.hpp"
+#include "bullet.hpp"
 
 #include "raylib.h"
 #include "raymath.h"
@@ -16,107 +17,28 @@
 class Tower : public Entity
 {
 public:
-    Tower(Vec2i gridPos, Vec2f localPos)
-    : Entity{Position{gridPos, localPos}, GRID_SIZE, GREEN},
-    center{gridPos.Cast<float>().x + 0.5f, gridPos.Cast<float>().y + 0.5f}
-    {};
+    Tower(Vec2i gridPos, Vec2f localPos) : Entity{Position{gridPos, localPos}, GRID_SIZE, GREEN} {};
     ~Tower() = default;
 
-    // struct Data : public EntityData
-    // {
-    //     Data(Vec2i gridPos, Vec2f localPos, Color color)
-    //     : EntityData{gridPos, localPos, TILE_SIZE, color},
-    //     center{gridPos.Cast<float>().x + 0.5f, gridPos.Cast<float>().y + 0.5f}
-    //     {};
-
-    //     const Vec2f center;
-
-    //     // ---------- Stats ---------- //
-    //     float detectionRange {4};
-    //     float attackTimer {0.0f};
-    //     float attackSpeed {0.2f};
-    //     float projectileSpeed {1.0f}; // 10.0 is the cap
-    //     float bulletDamage {1};
-    // };
-    const Vec2f center;
+    const Vec2f center {GRID_SIZE / 2, GRID_SIZE / 2};
 
     // ---------- Stats ---------- //
     float detectionRange {4};
     float attackTimer {0.0f};
     float attackSpeed {0.2f};
-    float projectileSpeed {1.0f}; // 10.0 is the cap
-    float maxProjectileSpeed {10.0f};
+    float projectileSpeed {160.0f};
     float bulletDamage {1};
-
-    struct Bullet
-    {
-        Bullet(Tower* tower) : tower{tower} {};
-
-        Position position;
-        Position prevPosition;
-
-        float radius;
-        float speed;
-        Vec2f velocity {0, 0};
-        Vec2f target;
-
-        float damage;
-
-        void Update()
-        {
-            // prevposition.grid = position.grid;
-            // prevLocalPosition = position.local;
-            // position.local += velocity * speed;
-            // localPos.y += velocity.y * speed;
-        };
-
-        void RemoveFromTower(std::shared_ptr<Bullet> bullet) { tower->RemoveBullet(bullet); };
-    private:
-        Tower* tower;
-    };
-
-    // Data data;
-
-    // enum class Target
-    // {
-    //     FIRST,
-    //     LAST,
-    //     NEAR,
-    //     STRONG,
-    //     WEAK,
-    // };
-
-    // Rectangle GetDetectionSqr() { return {}; };
+    // --------------------------- //
 
     void DrawDetectionRange();
     void Draw()
     {
         GH::DrawRec(GetRec(), color);
-
-        for (const auto& bullet : m_bullets)
-        {
-            GH::DrawCirc(GH::MergeReal(bullet->position.grid, bullet->position.local), bullet->radius, BLACK);
-        }
     };
 
     void Update()
     {
-        // if (!m_bullets.empty())
-        // {
-        //     for (auto bullet = m_bullets.begin(); bullet != m_bullets.end();)
-        //     {
-        //         (*bullet)->prevPos = (*bullet)->pos;
-        //         (*bullet)->pos.x += (*bullet)->velocity.x * (*bullet)->speed;
-        //         (*bullet)->pos.y += (*bullet)->velocity.y * (*bullet)->speed;
-
-        //         if ((*bullet)->pos.x <= 0 || (*bullet)->pos.x >= MAP_SIZE.x
-        //             || (*bullet)->pos.y <= 0 || (*bullet)->pos.y >= MAP_SIZE.y)
-        //         {
-        //             bullet = m_bullets.erase(bullet);
-        //         }
-        //         else  ++bullet;
-        //     }
-        // }
+        // Nothing to update here.
     };
 
     void SelectTarget(std::vector<std::shared_ptr<Enemy>> enemiesInRange)
@@ -126,16 +48,13 @@ public:
         //     /* code to select target */
         // }
 
-        // if (!enemiesInRange.empty())
-        // {
-        //     target.position = enemiesInRange[0]->data.GetRealPos();
-        //     target.isExist = true;
-        // }
-        // else
-        // {
-        //     target.position = {0, 0};
-        //     target.isExist = false;
-        // }
+        if (!enemiesInRange.empty())
+        {
+            target.enemy = enemiesInRange[0];
+            target.isExist = true;
+        }
+        else
+            target.isExist = false;
     };
     void Shoot(std::vector<std::shared_ptr<Enemy>> enemiesInRange)
     {
@@ -148,25 +67,21 @@ public:
             {
                 attackTimer = 0.0f;
 
-                // std::shared_ptr<Bullet> bullet = std::make_shared<Bullet>(this);
-                // bullet->position.grid = data.position.grid;
-                // bullet->position.local = data.center;
-                // bullet->prevLocalPosition = bullet->position.local;
-                // bullet->speed = data.projectileSpeed;
-                // bullet->damage = data.bulletDamage;
-                // bullet->radius = 1.0f / TILE_SIZE;
+                std::shared_ptr<Bullet> bullet = std::make_shared<Bullet>();
+                bullet->position.grid = position.grid;
+                bullet->position.local = center;
+                bullet->prevPosition = bullet->position;
+                bullet->speed = projectileSpeed;
+                bullet->damage = bulletDamage;
+                bullet->size = 1.0f;
+                bullet->enemy = target.enemy;
 
-                // // [todo] need to rethink how to handle bullet movement/position
-                // Vector2 direction = target.position - bullet->position.local;
-                // bullet->velocity = Vector2Normalize(direction);
-                // bullet->velocity = {bullet->velocity.x / 10.0f, bullet->velocity.y / 10.0f};
-
-                // m_bullets.push_back(bullet);
+                bullets.push_back(bullet);
             }
         }
     };
-    void DrawBullets();
-    std::vector<std::shared_ptr<Bullet>> GetBullets() { return m_bullets; };
+
+    std::vector<std::shared_ptr<Bullet>> GetBullets() { return bullets; };
 
     void Upgrade();
 
@@ -185,30 +100,22 @@ public:
         DrawStat("Damage", bulletDamage);
     };
 
-    void RemoveBullet(std::shared_ptr<Bullet> bullet)
+    void MoveBullets(std::vector<std::shared_ptr<Bullet>> &otherBullets)
     {
-        // auto it = std::find_if(m_bullets.begin(), m_bullets.end(), [bullet](const std::shared_ptr<Bullet>& ptr) {
-        //     return ptr == bullet;
-        // });
-
-        // if (it != m_bullets.end())
-        // {
-        //     m_bullets.erase(it);
-        // }
+        otherBullets.insert(otherBullets.end(), std::make_move_iterator(bullets.begin()), std::make_move_iterator(bullets.end()));
+        bullets.clear();
     };
 
 private:
 
-    std::vector<std::shared_ptr<Bullet>> m_bullets;
-
     struct Target
     {
         bool isExist {false};
-        Vec2f position {0.0, 0.0};
+        std::weak_ptr<Enemy> enemy;
     };
     Target target;
 
-    // Target target {Target::FIRST};
+    std::vector<std::shared_ptr<Bullet>> bullets;
 };
 
 #endif

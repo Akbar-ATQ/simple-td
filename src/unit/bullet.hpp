@@ -1,17 +1,33 @@
 #ifndef UNIT_BULLET_HPP
 #define UNIT_BULLET_HPP
 
+#include "entity.hpp"
+#include "enemy.hpp"
+#include "global_data.hpp"
+
+#include "raymath.h"
+
 class Bullet : public Entity
 {
 public:
-    Bullet();
-    ~Bullet();
+    Bullet() = default;
+    ~Bullet() = default;
 
-    // std::shared_ptr<Event::Signal> hittingEnemy = 
+    Position prevPosition;
+
+    std::weak_ptr<Enemy> enemy;
+
+    // ---------- stats ---------- //
+    float speed {0};
+    Vec2f direction {0, 0};
+    float damage {0};
+    // ---------------------------- //
+
+    // std::shared_ptr<Event::Signal> hittingEnemy // When hitting enemy, take exp and give it to tower
 
     void Draw()
     {
-        GH::DrawCirc(GH::MergeReal(position.grid, position.local), radius, BLACK);
+        GH::DrawCirc(GH::MergeGridLocalPosition(position.grid, position.local), size, BLACK);
     };
 
     void Update()
@@ -21,73 +37,47 @@ public:
 
     void Move()
     {
-        if (position.grid.x != target.x)
+        auto lockedEnemy = enemy.lock();
+        if (lockedEnemy)
         {
-            if (position.grid.x > target.x)
-                position.local.x -= speed * GetFrameTime();
-            else
-                position.local.x += speed * GetFrameTime();
+            Vec2f realPos = GH::MergeReal(position);
+            Vec2f enemyRealPos = GH::MergeReal(lockedEnemy->position.grid, lockedEnemy->GetCenter());
+            Vec2f realDirection = enemyRealPos - realPos;
+
+            Vector2 rayDirection = Vector2Normalize(realDirection.CastVec2Ray());
+            direction = {rayDirection.x, rayDirection.y};
         }
-        else if (position.grid.y != target.y)
+        position.local += (direction * speed) * GetFrameTime();
+
+        bool isMovingGrid {false};
+        Vec2i newGrid = position.grid;
+
+        if (position.local.x > GRID_SIZE)
         {
-            if (position.grid.y > target.y)
-                position.local.y -= speed * GetFrameTime();
-            else
-                position.local.y += speed * GetFrameTime();
+            newGrid.x = position.grid.x + 1;
+            isMovingGrid = true;
+        }
+        else if (position.local.y > GRID_SIZE)
+        {
+            newGrid.y = position.grid.y + 1;
+            isMovingGrid = true;
+        }
+        else if (position.local.x < 0)
+        {
+            newGrid.x = position.grid.x - 1;
+            isMovingGrid = true;
+        }
+        else if (position.local.y < 0)
+        {
+            newGrid.y = position.grid.y - 1;
+            isMovingGrid = true;
         }
 
-        if (position.local.x > GRID_SIZE || position.local.y > GRID_SIZE ||
-            position.local.x < 0 || position.local.y < 0
-            )
+        if (isMovingGrid)
         {
-            MoveGrid(this, {target.x, target.y});
-        }
-
-        if (position.grid.x == target.x && position.grid.y == target.y)
-        {
-            m_path.index++;
+            MoveGrid(this, newGrid);
         }
     };
-
-private:
-    Vec2i prevposition.grid;
-    Vec2f prevLocalPosition;
-
-    float radius;
-    float speed;
-    Vec2f velocity {0, 0};
-    Vec2f target;
-
-    float damage;
 };
-
-struct Bullet
-    {
-        Bullet(Tower* tower) : tower{tower} {};
-
-        Vec2i position.grid;
-        Vec2f position.local;
-        Vec2i prevposition.grid;
-        Vec2f prevLocalPosition;
-
-        float radius;
-        float speed;
-        Vec2f velocity {0, 0};
-        Vec2f target;
-
-        float damage;
-
-        void Update()
-        {
-            prevposition.grid = position.grid;
-            prevLocalPosition = position.local;
-            position.local += velocity * speed;
-            // localPos.y += velocity.y * speed;
-        };
-
-        void RemoveFromTower(std::shared_ptr<Bullet> bullet) { tower->RemoveBullet(bullet); };
-    private:
-        Tower* tower;
-    };
 
 #endif
