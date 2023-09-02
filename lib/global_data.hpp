@@ -26,25 +26,85 @@ struct Vec2
     Vec2() : x(0), y(0) {};
     Vec2(T x, T y) : x(x), y(y) {};
 
-    Vec2 operator+(const Vec2 &other) const { return Vec2(x + other.x, y + other.y); };
-    Vec2 operator-(const Vec2 &other) const { return Vec2(x - other.x, y - other.y); };
-    Vec2 operator*(const T scalar) const { return Vec2(x * scalar, y * scalar); };
-    Vec2 operator/(const T divisor) const { return Vec2(x / divisor, y / divisor); };
+    // Operator with other Vec2.
+    Vec2 operator+(const Vec2 &v) const { return Vec2(x + v.x, y + v.y); };
+    Vec2 operator-(const Vec2 &v) const { return Vec2(x - v.x, y - v.y); };
+    Vec2 operator*(const Vec2 &v) const { return Vec2(x * v.x, y * v.y); };
+    Vec2 operator/(const Vec2 &v) const
+    {
+        Vec2 result;
 
-    Vec2 &operator+=(const Vec2 &other) { x += other.x; y += other.y; return *this; }
-    Vec2 &operator-=(const Vec2 &other) { x -= other.x; y -= other.y; return *this; }
-    Vec2 &operator*=(const T scalar) { x *= scalar; y *= scalar; return *this; }
-    Vec2 &operator/=(const T divisor) { x /= divisor; y /= divisor; return *this; }
+        if (v.x != 0)
+            result.x = x / v.x;
+        else
+            result.x = 0;
 
-    bool operator==(const Vec2 &other) const { return x == other.x && y == other.y; };
-    bool operator!=(const Vec2 &other) const { return !(*this == other); };
-    bool operator<(const Vec2 &other) const { return x < other.x && y < other.y; };
-    bool operator<=(const Vec2 &other) const { return x <= other.x && y <= other.y; };
-    bool operator>(const Vec2 &other) const { return x > other.x && y > other.y; };
-    bool operator>=(const Vec2 &other) const { return x >= other.x && y >= other.y; };
+        if (v.y != 0)
+           result.y = y / v.y;
+        else
+            y = 0;
+
+        return result;
+    };
+
+    Vec2 &operator+=(const Vec2 &v) { x += v.x; y += v.y; return *this; };
+    Vec2 &operator-=(const Vec2 &v) { x -= v.x; y -= v.y; return *this; };
+    Vec2 &operator*=(const Vec2 &v) { x *= v.x; y *= v.y; return *this; };
+    Vec2 &operator/=(const Vec2 &v)
+    {
+        if (v.x != 0)
+            x /= v.x;
+        else
+            x = 0;
+
+        if (v.y != 0)
+           y /= v.y;
+        else
+            y = 0;
+
+        return *this;
+    };
+
+    // Operator with signle scalar <T>.
+    Vec2 operator+(const T n) const { return Vec2(x + n, y + n); };
+    Vec2 operator-(const T n) const { return Vec2(x - n, y - n); };
+    Vec2 operator*(const T n) const { return Vec2(x * n, y * n); };
+    Vec2 operator/(const T n) const
+    {
+        if (n != 0)
+            return Vec2(x / n, y / n);
+        return Vec2(0, 0);
+    };
+
+    Vec2 &operator+=(const T n) { x += n; y += n; return *this; };
+    Vec2 &operator-=(const T n) { x -= n; y -= n; return *this; };
+    Vec2 &operator*=(const T n) { x *= n; y *= n; return *this; };
+    Vec2 &operator/=(const T n)
+    {
+        if (n != 0)
+        {
+            x /= n;
+            y /= n;
+        }
+        else
+        {
+            x = 0;
+            y = 0;
+        }
+
+        return *this;
+    };
+
+    // Comparison operator.
+    bool operator==(const Vec2 &v) const { return x == v.x && y == v.y; };
+    bool operator!=(const Vec2 &v) const { return !(*this == v); };
+    bool operator<(const Vec2 &v) const { return x < v.x && y < v.y; };
+    bool operator<=(const Vec2 &v) const { return x <= v.x && y <= v.y; };
+    bool operator>(const Vec2 &v) const { return x > v.x && y > v.y; };
+    bool operator>=(const Vec2 &v) const { return x >= v.x && y >= v.y; };
 
     template <typename N>
-    Vec2<N> Cast() const { return { static_cast<N>(x), static_cast<N>(y) }; }
+    Vec2<N> Cast() const { return { static_cast<N>(x), static_cast<N>(y) }; };
 
     // Cast to Vector2 raylib
     Vector2 CastVec2Ray() const { return {static_cast<float>(x), static_cast<float>(y)}; };
