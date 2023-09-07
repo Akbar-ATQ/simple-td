@@ -22,7 +22,7 @@ public:
     ~Level() = default;
 
     PathFinding pathFinding;
-    Vec2i basePos;
+    Vec2i basePosition;
 
     std::shared_ptr<Event::Signal> listener;
 

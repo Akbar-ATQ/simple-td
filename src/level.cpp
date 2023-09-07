@@ -40,7 +40,7 @@ inline void GenerateTerrain(LevelData &levelData, Grid &grid, Level &level)
             grid.terrainId = TerrainID::BASE;
             grid.terrain = std::make_shared<Base>(grid.position);
 
-            level.basePos = grid.position;
+            level.basePosition = grid.position;
             break;
         }
     }

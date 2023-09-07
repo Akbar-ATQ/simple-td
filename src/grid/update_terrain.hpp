@@ -5,13 +5,12 @@
 
 void UpdateSpawner(const std::shared_ptr<Spawner> spawner, Level &level, Grid &grid)
 {
-    spawner->Update();
+    spawner->UpdateWave();
     if (spawner->wave.inProgress)
     {
-        // [todo] make the spawner hold base position
         auto path = level.pathFinding.GetPath(
             {spawner->position.grid.x, spawner->position.grid.y},
-            {level.basePos.x, level.basePos.y}
+            {level.basePosition.x, level.basePosition.y}
         );
         std::vector<std::shared_ptr<Enemy>> enemies;
 
