@@ -67,14 +67,7 @@ public:
             {
                 attackTimer = 0.0f;
 
-                std::shared_ptr<Bullet> bullet = std::make_shared<Bullet>();
-                bullet->position.grid = position.grid;
-                bullet->position.local = center;
-                bullet->prevPosition = bullet->position;
-                bullet->speed = projectileSpeed;
-                bullet->damage = bulletDamage;
-                bullet->size = 1.0f;
-                bullet->enemy = target.enemy;
+                std::shared_ptr<Bullet> bullet = Bullet::Create(position.grid, center, projectileSpeed, bulletDamage, target.enemy);
 
                 bullets.push_back(bullet);
             }
@@ -107,7 +100,6 @@ public:
     };
 
 private:
-
     struct Target
     {
         bool isExist {false};

@@ -78,6 +78,26 @@ public:
             MoveGrid(this, newGrid);
         }
     };
+
+    static std::shared_ptr<Bullet> Create(
+        const Vec2i &grid,
+        const Vec2f &local,
+        const float &speed,
+        const float &damage,
+        const std::weak_ptr<Enemy> &enemy
+        )
+    {
+        std::shared_ptr<Bullet> bullet = std::make_shared<Bullet>();
+        bullet->position.grid = grid;
+        bullet->position.local = local;
+        bullet->prevPosition = bullet->position;
+        bullet->speed = speed;
+        bullet->damage = damage;
+        bullet->size = 1.0f;
+        bullet->enemy = enemy;
+
+        return bullet;
+    };
 };
 
 #endif
