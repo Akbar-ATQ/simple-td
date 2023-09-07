@@ -91,7 +91,6 @@ public:
     void Update()
     {
         ActivateOnClick();
-        if (tower) tower->Update();
     };
 
 private:

@@ -8,6 +8,8 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/level.cpp
   ${CMAKE_SOURCE_DIR}/src/grid/grid_helper.cpp
   ${CMAKE_SOURCE_DIR}/src/unit/path_finding.cpp
+  ${CMAKE_SOURCE_DIR}/src/unit/tower/tower.cpp
+  ${CMAKE_SOURCE_DIR}/src/unit/tower/bullet.cpp
 )
 
 add_executable(main ${SOURCES})
@@ -21,6 +23,7 @@ target_include_directories(main PUBLIC
     ${PROJECT_SOURCE_DIR}/src/grid
     ${PROJECT_SOURCE_DIR}/src/terrain
     ${PROJECT_SOURCE_DIR}/src/unit
+    ${PROJECT_SOURCE_DIR}/src/unit/tower
 )
 
 target_link_libraries(main

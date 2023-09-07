@@ -106,7 +106,7 @@ void UpdateBullets(Grid &grid, Level &level)
     std::vector<std::shared_ptr<Bullet>> bulletsToMove;
     for (auto& bullet : grid.bullets)
     {
-        bullet->Update();
+        bullet->Move();
         if (bullet->position.grid != grid.position)
             bulletsToMove.push_back(bullet);
     }
