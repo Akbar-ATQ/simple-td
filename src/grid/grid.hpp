@@ -3,7 +3,7 @@
 
 #include "global_data.hpp"
 #include "enemy.hpp"
-#include "tower.hpp"
+#include "bullet.hpp"
 #include "platform.hpp"
 #include "base.hpp"
 #include "road.hpp"
@@ -21,11 +21,8 @@ public:
 
     const Vec2i position;
 
-    // ---------- Entity ---------- //
-
     TerrainID terrainId {TerrainID::EMPTY};
 
-    // consider using polymorph
     std::variant<
         std::shared_ptr<Base>,
         std::shared_ptr<Road>,
@@ -35,8 +32,6 @@ public:
 
     std::vector<std::weak_ptr<Enemy>> enemies;
     std::vector<std::shared_ptr<Bullet>> bullets;
-
-    // ------------------------------ //
 
     template<typename T>
     std::shared_ptr<T> GetTerrain()
