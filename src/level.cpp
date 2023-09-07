@@ -105,9 +105,6 @@ void Level::Update()
     enemies.end());
 };
 
-
-// Break it from Level::Draw
-// To prevent making Level::Draw too deep
 inline void DrawTerrain(Grid &grid)
 {
     if (grid.terrainId == TerrainID::BASE)
@@ -137,6 +134,7 @@ void Level::Draw()
             if (!map[x][y]->IsEmpty())
             {
                 DrawTerrain(*map[x][y]);
+
                 for (const auto &bullet : map[x][y]->bullets)
                 {
                     bullet->Draw();
