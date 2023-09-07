@@ -16,7 +16,7 @@ void UpdateEnemies(Grid &grid, Level &level)
         auto lockedEnemy = enemy.lock();
         if (lockedEnemy)
         {
-            lockedEnemy->Update();
+            lockedEnemy->Move();
 
             if (lockedEnemy->position.grid.x != grid.position.x || lockedEnemy->position.grid.y != grid.position.y)
             {

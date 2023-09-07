@@ -98,7 +98,7 @@ void Level::Update()
     enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
         [](const auto &enemy)
             {
-                if (enemy->hp <= 0)
+                if (enemy->GetHP() <= 0)
                     return true;
                 return false;
             }),
