@@ -8,6 +8,7 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/level.cpp
   ${CMAKE_SOURCE_DIR}/src/grid/grid_helper.cpp
   ${CMAKE_SOURCE_DIR}/src/terrain/spawner.cpp
+  ${CMAKE_SOURCE_DIR}/src/terrain/platform.cpp
   ${CMAKE_SOURCE_DIR}/src/unit/tower/tower.cpp
   ${CMAKE_SOURCE_DIR}/src/unit/tower/bullet.cpp
   ${CMAKE_SOURCE_DIR}/src/unit/enemy/enemy.cpp

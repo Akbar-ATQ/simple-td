@@ -24,7 +24,7 @@ inline void GenerateTerrain(LevelData &levelData, Grid &grid, Level &level)
             std::shared_ptr<Platform> platform = std::make_shared<Platform>(grid.position);
 
             level.listener->Connect<Event::PlatformActivated, Level>(Event::PlatformActivated(), &Level::OnPlatformActivated);
-            level.listener->Connect(platform->eventEmitter);
+            level.listener->Connect(platform->event);
 
             grid.terrain = platform;
             break;

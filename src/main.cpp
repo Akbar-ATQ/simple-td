@@ -1,4 +1,5 @@
 #define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
 
 #include "level.hpp"
 #include "grid_helper.hpp"

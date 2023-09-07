@@ -26,7 +26,7 @@ void UpdateSpawner(const std::shared_ptr<Spawner> spawner, Level &level, Grid &g
 
 void UpdatePlatform(std::shared_ptr<Platform> platform)
 {
-    platform->Update();
+    platform->ActivateOnClick();
 };
 
 void UpdateTerrain(Grid &grid, Level &level)

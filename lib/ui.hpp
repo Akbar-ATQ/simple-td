@@ -4,7 +4,6 @@
 #include "grid_helper.hpp"
 #include "global_data.hpp"
 
-// #undef RAYGUI_IMPLEMENTATION
 #include "raylib.h"
 #include "raygui.h"
 
@@ -20,7 +19,7 @@ namespace UI
         GH::DrawRec(sidePanel, BROWN);
     };
 
-    inline void SidePanelCloseButton(bool& toggle)
+    inline void SidePanelCloseButton(bool &toggle)
     {
         if (GuiButton(closeButton, "Close"))
             toggle = false;
