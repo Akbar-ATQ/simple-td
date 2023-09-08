@@ -21,18 +21,18 @@ struct Entity
 
 inline void MoveGrid(Entity *entity, const Vec2i &newGrid)
 {
-    float fractionX = (entity->position.local.x - static_cast<int>(entity->position.local.x));
-    float fractionY = (entity->position.local.y - static_cast<int>(entity->position.local.y));
+    float offsetX = entity->position.local.x - GRID_SIZE;
+    float offsetY = entity->position.local.y - GRID_SIZE;
 
     if (newGrid.x > entity->position.grid.x)
-        entity->position.local.x = 0 + fractionX;
+        entity->position.local.x = 0 + offsetX;
     else if (newGrid.x < entity->position.grid.x)
-        entity->position.local.x = GRID_SIZE + fractionX;
+        entity->position.local.x = GRID_SIZE + entity->position.local.x;
 
     if (newGrid.y > entity->position.grid.y)
-        entity->position.local.y = 0 + fractionY;
+        entity->position.local.y = 0 + offsetY;
     else if (newGrid.y < entity->position.grid.y)
-        entity->position.local.y = GRID_SIZE + fractionY;
+        entity->position.local.y = GRID_SIZE + entity->position.local.y;
 
     entity->position.grid = newGrid;
 };

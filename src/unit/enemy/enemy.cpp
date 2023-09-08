@@ -41,8 +41,13 @@ void Enemy::Move()
                 position.local.y += speed * GetFrameTime();
         }
 
-        if (position.local.x > GRID_SIZE || position.local.y > GRID_SIZE ||
-            position.local.x < 0 || position.local.y < 0)
+        Rectangle currentGrid {
+            static_cast<float>(position.grid.x * GRID_SIZE),
+            static_cast<float>(position.grid.y * GRID_SIZE),
+            GRID_SIZE,
+            GRID_SIZE
+        };
+        if (!CheckCollisionRecs(GetRec(), currentGrid))
         {
             MoveGrid(this, {targetX, targetY});
         }
