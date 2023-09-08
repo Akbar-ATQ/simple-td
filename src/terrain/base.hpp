@@ -10,7 +10,7 @@
 class Base : public Entity
 {
 public:
-    Base(Vec2i gridPos) : Entity{Position{gridPos, {0, 0}}, GRID_SIZE, RED} {};
+    Base(Vec2i gridPos) : Entity{Position{gridPos, {0, 0}}, GRID_SIZE, MAROON} {};
 
     void Draw()
     {
