@@ -105,26 +105,6 @@ void Level::Update()
     enemies.end());
 };
 
-inline void DrawTerrain(Grid &grid)
-{
-    if (grid.terrainId == TerrainID::BASE)
-    {
-        grid.GetTerrain<Base>()->Draw();
-    }
-    else if (grid.terrainId == TerrainID::SPAWNER)
-    {
-        grid.GetTerrain<Spawner>()->Draw();
-    }
-    else if (grid.terrainId == TerrainID::ROAD)
-    {
-        grid.GetTerrain<Road>()->Draw();
-    }
-    else if (grid.terrainId == TerrainID::PLATFORM)
-    {
-        grid.GetTerrain<Platform>()->Draw();
-    }
-};
-
 void Level::Draw()
 {
     for (int x = 0; x < map.size(); ++x)
@@ -133,7 +113,15 @@ void Level::Draw()
         {
             if (!map[x][y]->IsEmpty())
             {
-                DrawTerrain(*map[x][y]);
+                if (map[x][y]->terrainId != TerrainID::EMPTY)
+                {
+                    std::visit([](const auto &terrain)
+                        {
+                            terrain->Draw();
+                        },
+                        map[x][y]->terrain
+                    );
+                }
 
                 for (const auto &bullet : map[x][y]->bullets)
                 {
