@@ -41,13 +41,7 @@ void Enemy::Move()
                 position.local.y += speed * GetFrameTime();
         }
 
-        Rectangle currentGrid {
-            static_cast<float>(position.grid.x * GRID_SIZE),
-            static_cast<float>(position.grid.y * GRID_SIZE),
-            GRID_SIZE,
-            GRID_SIZE
-        };
-        if (!CheckCollisionRecs(GetRec(), currentGrid))
+        if (!GH::CollisionRecGrid(GetRec(), position.grid))
         {
             MoveGrid(this, {targetX, targetY});
         }
