@@ -7,14 +7,14 @@
 
 --------------------
 # Todo
-- [ ] Refactor
+- [x] Refactor
     - [x] Separate bullet from tower
     - [x] Shoot from tower center toward enemy center
-    - [ ] Place bullet and path_finding in /unit/component
-    - [ ] Separate header and implementation
-    - [ ] Maybe create base class `Terrain`
-- [ ] Fix enemy moving to account for its size
+    - [x] Separate header and implementation
+    - [ ] ~~Maybe create base class `Terrain`~~
+    - [x] Fix enemy moving to account for its size
 - [ ] Level editor
+- [ ] Level, exp and coin
 - [ ] Unit variations
 
 # EXP

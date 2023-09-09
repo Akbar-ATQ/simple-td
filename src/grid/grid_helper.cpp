@@ -1,6 +1,6 @@
 #include "grid_helper.hpp"
 
-void GH::Draw()
+void GH::DrawGrid()
 {
     for (int x = 0; x < MAP_SIZE.x; ++x)
     {

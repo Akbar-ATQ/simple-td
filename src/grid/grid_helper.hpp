@@ -8,8 +8,7 @@
 // ---------- Handle grid related task/calculation ---------- //
 namespace GH
 {
-    // Draw grid map
-    void Draw();
+    void DrawGrid();
     void DrawRec(const Rectangle rec, const Color color);
     void DrawRecInCenter(const Rectangle rec, const Color color);
     void DrawCirc(const Vec2f v, const float radius, const Color color);

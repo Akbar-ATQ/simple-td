@@ -81,7 +81,7 @@ int main()
 
             ClearBackground(RAYWHITE);
 
-            GH::Draw();
+            GH::DrawGrid();
 
             level.Draw();
 
