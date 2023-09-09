@@ -39,8 +39,6 @@ inline void GenerateTerrain(LevelData &levelData, Grid &grid, Level &level)
         {
             grid.terrainId = TerrainID::BASE;
             grid.terrain = std::make_shared<Base>(grid.position);
-
-            level.basePosition = grid.position;
             break;
         }
     }
@@ -49,6 +47,10 @@ inline void GenerateTerrain(LevelData &levelData, Grid &grid, Level &level)
 void Level::GenerateLevel(LevelData &levelData)
 {
     pathFinding.SetGenerator(levelData);
+
+    // these are to assign basePosition to spawner to be used for path generation.
+    std::vector<Vec2i> spawnersPosition;
+    Vec2i basePosition;
 
     for (int x = 0; x < MAP_SIZE.x; ++x)
     {
@@ -60,10 +62,20 @@ void Level::GenerateLevel(LevelData &levelData)
 
             GenerateTerrain(levelData, *grid, *this);
 
+            if (levelData[x][y] == TerrainID::SPAWNER)
+                spawnersPosition.push_back({x, y});
+            if (levelData[x][y] == TerrainID::BASE)
+                basePosition = {x, y};
+
             gridY.push_back(std::move(grid));
         }
 
         map.push_back(std::move(gridY));
+    }
+
+    for (const auto &spawnerPosition : spawnersPosition)
+    {
+        map[spawnerPosition.x][spawnerPosition.y]->GetTerrain<Spawner>()->basePosition = basePosition;
     }
 };
 

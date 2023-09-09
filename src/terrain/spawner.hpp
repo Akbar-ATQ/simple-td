@@ -16,6 +16,8 @@ class Spawner : public Entity
 public:
     Spawner(Vec2i gridPos) : Entity{Position{gridPos, {0, 0}}, GRID_SIZE, PURPLE} {};
 
+    Vec2i basePosition;
+
     struct Wave
     {
         bool start {false};
