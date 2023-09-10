@@ -2,7 +2,7 @@
 
 #include "grid_helper.hpp"
 
-void UpdateEnemies(Grid &grid, Level &level)
+void UpdateEnemies(Grid &grid, Level::Manager &level)
 {
     std::vector<std::weak_ptr<Enemy>> enemiesToMove;
 
@@ -55,7 +55,7 @@ void UpdateEnemies(Grid &grid, Level &level)
     }
 };
 
-void UpdateTower(Grid &grid, Level &level)
+void UpdateTower(Grid &grid, Level::Manager &level)
 {
     // [Idea] make enemy have int id to make it easy targeting first/last
 
@@ -100,7 +100,7 @@ void UpdateTower(Grid &grid, Level &level)
         tower->MoveBullets(grid.bullets);
 };
 
-void UpdateBullets(Grid &grid, Level &level)
+void UpdateBullets(Grid &grid, Level::Manager &level)
 {
     std::vector<std::shared_ptr<Bullet>> bulletsToMove;
     for (auto &bullet : grid.bullets)
@@ -134,7 +134,7 @@ void UpdateBullets(Grid &grid, Level &level)
     }
 };
 
-void HandleCollision(Grid &grid, Level &level)
+void HandleCollision(Grid &grid, Level::Manager &level)
 {
     // Bullet take enemies in grid cells around it and check collision against it.
     // the reason is because enemy can be between two grid cells but only one cell own it,
@@ -197,7 +197,7 @@ void HandleCollision(Grid &grid, Level &level)
     }
 };
 
-void UpdateUnit(Grid &grid, Level &level)
+void UpdateUnit(Grid &grid, Level::Manager &level)
 {
     if (!grid.enemies.empty())
         UpdateEnemies(grid, level);

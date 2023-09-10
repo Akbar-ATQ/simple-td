@@ -1,6 +1,6 @@
 #include "update_terrain.hpp"
 
-void UpdateSpawner(const std::shared_ptr<Spawner> spawner, Level &level, Grid &grid)
+void UpdateSpawner(const std::shared_ptr<Spawner> spawner, Level::Manager &level, Grid &grid)
 {
     spawner->UpdateWave();
     if (spawner->wave.inProgress)
@@ -26,7 +26,7 @@ void UpdatePlatform(std::shared_ptr<Platform> platform)
     platform->ActivateOnClick();
 };
 
-void UpdateTerrain(Grid &grid, Level &level)
+void UpdateTerrain(Grid &grid, Level::Manager &level)
 {
     if (grid.terrainId == TerrainID::SPAWNER)
         UpdateSpawner(grid.GetTerrain<Spawner>(), level, grid);

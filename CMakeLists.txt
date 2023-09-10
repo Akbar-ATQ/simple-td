@@ -5,10 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/main.cpp
-  ${CMAKE_SOURCE_DIR}/src/level.cpp
   ${CMAKE_SOURCE_DIR}/src/grid/grid_helper.cpp
   ${CMAKE_SOURCE_DIR}/src/grid/update_unit.cpp
   ${CMAKE_SOURCE_DIR}/src/grid/update_terrain.cpp
+  ${CMAKE_SOURCE_DIR}/src/level/level_manager.cpp
+  ${CMAKE_SOURCE_DIR}/src/level/level_loader.cpp
   ${CMAKE_SOURCE_DIR}/src/terrain/spawner.cpp
   ${CMAKE_SOURCE_DIR}/src/terrain/platform.cpp
   ${CMAKE_SOURCE_DIR}/src/unit/tower/tower.cpp
@@ -26,6 +27,7 @@ target_include_directories(main PUBLIC
     ${PROJECT_SOURCE_DIR}/third_party
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/src/grid
+    ${PROJECT_SOURCE_DIR}/src/level
     ${PROJECT_SOURCE_DIR}/src/terrain
     ${PROJECT_SOURCE_DIR}/src/unit/tower
     ${PROJECT_SOURCE_DIR}/src/unit/enemy

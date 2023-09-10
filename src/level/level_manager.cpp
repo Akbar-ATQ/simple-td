@@ -1,4 +1,4 @@
-#include "level.hpp"
+#include "level_manager.hpp"
 
 #include "platform.hpp"
 #include "base.hpp"
@@ -7,7 +7,7 @@
 #include "update_terrain.hpp"
 #include "update_unit.hpp"
 
-inline void GenerateTerrain(LevelData &levelData, Grid &grid, Level &level)
+inline void GenerateTerrain(LevelData &levelData, Grid &grid, Level::Manager &level)
 {
     switch (levelData[grid.position.x][grid.position.y])
     {
@@ -23,7 +23,7 @@ inline void GenerateTerrain(LevelData &levelData, Grid &grid, Level &level)
 
             std::shared_ptr<Platform> platform = std::make_shared<Platform>(grid.position);
 
-            level.listener->Connect<Event::PlatformActivated, Level>(Event::PlatformActivated(), &Level::OnPlatformActivated);
+            level.listener->Connect<Event::PlatformActivated, Level::Manager>(Event::PlatformActivated(), &Level::Manager::OnPlatformActivated);
             level.listener->Connect(platform->event);
 
             grid.terrain = platform;
@@ -44,7 +44,7 @@ inline void GenerateTerrain(LevelData &levelData, Grid &grid, Level &level)
     }
 };
 
-void Level::GenerateLevel(LevelData &levelData)
+void Level::Manager::GenerateLevel(LevelData &levelData)
 {
     pathFinding.SetGenerator(levelData);
 
@@ -79,7 +79,7 @@ void Level::GenerateLevel(LevelData &levelData)
     }
 };
 
-void Level::OnPlatformActivated(const Event::PlatformActivated platform)
+void Level::Manager::OnPlatformActivated(const Event::PlatformActivated platform)
 {
     static Vec2i prevPlatformGrid {platform.position.grid};
 
@@ -91,7 +91,7 @@ void Level::OnPlatformActivated(const Event::PlatformActivated platform)
     prevPlatformGrid = platform.position.grid;
 };
 
-void Level::Update()
+void Level::Manager::Update()
 {
     for (int x = 0; x < map.size(); ++x)
     {
@@ -117,7 +117,7 @@ void Level::Update()
     enemies.end());
 };
 
-void Level::Draw()
+void Level::Manager::Draw()
 {
     for (int x = 0; x < map.size(); ++x)
     {

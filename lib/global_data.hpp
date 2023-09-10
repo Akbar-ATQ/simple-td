@@ -8,11 +8,11 @@
 
 enum class TerrainID
 {
-    BASE,
-    SPAWNER,
-    ROAD,
-    PLATFORM,
-    EMPTY,
+    EMPTY = 0,
+    ROAD = 1,
+    BASE = 2,
+    SPAWNER = 3,
+    PLATFORM = 4,
 };
 
 using LevelData = std::vector<std::vector<TerrainID>>;
