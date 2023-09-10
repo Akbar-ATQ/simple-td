@@ -7,13 +7,9 @@
 
 --------------------
 # Todo
-- [x] Refactor
-    - [x] Separate bullet from tower
-    - [x] Shoot from tower center toward enemy center
-    - [x] Separate header and implementation
-    - [ ] ~~Maybe create base class `Terrain`~~
-    - [x] Fix enemy moving to account for its size
 - [ ] Level editor
+    - [ ] When saving pop up input box for user to name the level
+    - [ ] UI to select terrain and save button
 - [ ] Level, exp and coin
 - [ ] Unit variations
 

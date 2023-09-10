@@ -22,7 +22,7 @@ public:
     {
         bool start {false};
         bool inProgress {false};
-        int enemies {15};
+        int enemies {1};
         float interval {0.3};
     };
     Wave wave;

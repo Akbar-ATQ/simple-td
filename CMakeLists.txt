@@ -10,6 +10,7 @@ set(SOURCES
   ${CMAKE_SOURCE_DIR}/src/grid/update_terrain.cpp
   ${CMAKE_SOURCE_DIR}/src/level/level_manager.cpp
   ${CMAKE_SOURCE_DIR}/src/level/level_loader.cpp
+  ${CMAKE_SOURCE_DIR}/src/level/level_editor.cpp
   ${CMAKE_SOURCE_DIR}/src/terrain/spawner.cpp
   ${CMAKE_SOURCE_DIR}/src/terrain/platform.cpp
   ${CMAKE_SOURCE_DIR}/src/unit/tower/tower.cpp
