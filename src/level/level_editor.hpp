@@ -66,6 +66,19 @@ namespace Level
         DummyTerrain dummyPlatform;
 
         void DrawDummyTerrain(const int x, const int y);
+
+        Rectangle textBox {
+            static_cast<float>(((MAP_SIZE.x / 2) - 3) * GRID_SIZE),
+            static_cast<float>(4 * GRID_SIZE),
+            static_cast<float>(6 * GRID_SIZE),
+            static_cast<float>(GRID_SIZE)
+        };
+        #define MAX_CHARS 21
+        char levelName[MAX_CHARS] = "\0";
+
+        bool isSaving {false};
+
+        void SidePanel();
     };
 };
 
