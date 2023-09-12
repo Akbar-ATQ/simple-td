@@ -20,7 +20,7 @@ void PathFinding::SetCollision(LevelData &map)
     { 
         AStar::Vec2i below = {x, y + 1};
         if (!GH::OutsideMap(below.x, below.y) &&
-            (map[below.x][below.y] == TerrainID::EMPTY || map[below.x][below.x] == TerrainID::PLATFORM)
+            (map[below.x][below.y] == TerrainID::EMPTY || map[below.x][below.y] == TerrainID::PLATFORM)
         )
         {
             walls.push_back(below);
