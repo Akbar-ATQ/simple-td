@@ -21,13 +21,18 @@ int main()
     bool editMode {false};
 
     Level::Editor levelEditor;
+    Rectangle editLevelButton {
+        static_cast<float>(16 * GRID_SIZE),
+        static_cast<float>(13 * GRID_SIZE),
+        static_cast<float>(4 * GRID_SIZE),
+        static_cast<float>(GRID_SIZE)
+    };
 
     // Main game loop
     SetTargetFPS(60);
     while (!WindowShouldClose())
     {
-        if (IsKeyPressed(KEY_E))
-            editMode = !editMode;
+        GuiSetStyle(DEFAULT, TEXT_SIZE, 20);
 
         if (editMode)
         {
@@ -44,6 +49,9 @@ int main()
                 GH::DrawGrid();
 
                 level.Draw();
+
+                if (GuiButton(editLevelButton, "LEVEL EDITOR"))
+                    editMode = !editMode;
 
             EndDrawing();
         }

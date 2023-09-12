@@ -12,7 +12,7 @@ namespace UI
     const float sidePanelWidth {3.0f};
     const Vec2f sidePanelPos = {(MAP_SIZE.x - sidePanelWidth), 0};
     const Rectangle sidePanel {sidePanelPos.x * GRID_SIZE, sidePanelPos.y, (GRID_SIZE * sidePanelWidth), SCREEN_HEIGHT};
-    const Rectangle closeButton {(sidePanelPos.x + 2) * GRID_SIZE, sidePanelPos.y, GRID_SIZE, GRID_SIZE};
+    const Rectangle closeButton {(sidePanelPos.x + 1) * GRID_SIZE, sidePanelPos.y, (2 * GRID_SIZE), GRID_SIZE};
 
     inline void SidePanel()
     {
