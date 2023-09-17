@@ -17,6 +17,15 @@ enum class TerrainID
 
 using LevelData = std::vector<std::vector<TerrainID>>;
 
+enum Mode
+{
+    MAIN_MENU,
+    PLAY,
+    LEVEL_EDITOR,
+};
+
+extern Mode mode;
+
 template<typename T>
 struct Vec2
 {

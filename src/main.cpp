@@ -9,24 +9,76 @@
 
 #include "raylib.h"
 
+#include <string>
+
+Mode mode {MAIN_MENU};
+
+void MainMenu(Level::Manager &level, std::string &levelPath)
+{
+    bool isPlaying {false};
+    std::string levelName;
+
+    Rectangle level1Button {
+        static_cast<float>(8 * GRID_SIZE),
+        static_cast<float>(2 * GRID_SIZE),
+        static_cast<float>(4 * GRID_SIZE),
+        static_cast<float>(GRID_SIZE)
+    };
+
+    if (GuiButton(level1Button, "LEVEL 1"))
+    {
+        levelName = "level1.map";
+        isPlaying = true;
+    }
+
+    Rectangle level2Button {
+        static_cast<float>(8 * GRID_SIZE),
+        static_cast<float>(3 * GRID_SIZE),
+        static_cast<float>(4 * GRID_SIZE),
+        static_cast<float>(GRID_SIZE)
+    };
+
+    if (GuiButton(level2Button, "LEVEL 2"))
+    {
+        levelName = "level2.map";
+        isPlaying = true;
+    }
+
+    if (isPlaying)
+    {
+        std::string levelFile;
+        levelFile.append(levelPath);
+        levelFile.append(levelName);
+
+        LevelData levelData;
+        Level::Loader(levelFile, levelData);
+        level.GenerateLevel(levelData);
+
+        mode = PLAY;
+    }
+
+    // ---------- Level Editor Button ---------- //
+    Rectangle levelEditorButton {
+        static_cast<float>(15 * GRID_SIZE),
+        static_cast<float>(2 * GRID_SIZE),
+        static_cast<float>(4 * GRID_SIZE),
+        static_cast<float>(GRID_SIZE)
+    };
+
+    if (GuiButton(levelEditorButton, "Level Editor"))
+    {
+        mode = LEVEL_EDITOR;
+    }
+};
+
 int main()
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Simple TD V2");
 
-    LevelData level1Map;
-    Level::Loader("../assets/level/custom_level.map", level1Map);
     Level::Manager level;
-    level.GenerateLevel(level1Map);
-
-    bool editMode {false};
+    std::string levelPath {"../assets/level/"};
 
     Level::Editor levelEditor;
-    Rectangle editLevelButton {
-        static_cast<float>(16 * GRID_SIZE),
-        static_cast<float>(13 * GRID_SIZE),
-        static_cast<float>(4 * GRID_SIZE),
-        static_cast<float>(GRID_SIZE)
-    };
 
     // Main game loop
     SetTargetFPS(60);
@@ -34,27 +86,44 @@ int main()
     {
         GuiSetStyle(DEFAULT, TEXT_SIZE, 20);
 
-        if (editMode)
+        Rectangle menuButton {
+                static_cast<float>(17 * GRID_SIZE),
+                static_cast<float>(0 * GRID_SIZE),
+                static_cast<float>(3 * GRID_SIZE),
+                static_cast<float>(GRID_SIZE)
+            };
+
+        BeginDrawing();
+
+        ClearBackground(RAYWHITE);
+
+        GH::DrawGrid();
+
+        if (mode == MAIN_MENU)
         {
-            levelEditor.Update();
+            MainMenu(level, levelPath);
         }
-        else
+        else if (mode == PLAY)
         {
             level.Update();
 
-            BeginDrawing();
+            level.Draw();
 
-                ClearBackground(RAYWHITE);
-
-                GH::DrawGrid();
-
-                level.Draw();
-
-                if (GuiButton(editLevelButton, "LEVEL EDITOR"))
-                    editMode = !editMode;
-
-            EndDrawing();
+            if (GuiButton(menuButton, "Main Menu"))
+            {
+                level.Clear();
+                mode = MAIN_MENU;
+            }
         }
+        else if (mode == LEVEL_EDITOR)
+        {
+            levelEditor.UpdateAndDraw();
+
+            if (GuiButton(menuButton, "Main Menu"))
+                mode = MAIN_MENU;
+        }
+        
+        EndDrawing();
     }
 
     // Cleanup

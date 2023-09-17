@@ -164,31 +164,23 @@ void Level::Editor::DrawDummyTerrain(const int x, const int y)
     GH::DrawRec(dummy, color);
 };
 
-void Level::Editor::Update()
+void Level::Editor::UpdateAndDraw()
 {
-    BeginDrawing();
-
-        ClearBackground(RAYWHITE);
-
-        GH::DrawGrid();
-
-        for (int x = 0; x < levelData.size(); ++x)
+    for (int x = 0; x < levelData.size(); ++x)
+    {
+        for (int y = 0; y < levelData[x].size(); ++y)
         {
-            for (int y = 0; y < levelData[x].size(); ++y)
+            if (levelData[x][y] != TerrainID::EMPTY)
             {
-                if (levelData[x][y] != TerrainID::EMPTY)
-                {
-                    DrawDummyTerrain(x, y);
-                }
+                DrawDummyTerrain(x, y);
             }
         }
+    }
 
-        SidePanel();
+    SidePanel();
 
-        if (isSaving)
-            SaveLevel();
-        else
-            EditLevel();
-
-    EndDrawing();
+    if (isSaving)
+        SaveLevel();
+    else
+        EditLevel();
 };

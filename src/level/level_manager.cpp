@@ -91,6 +91,13 @@ void Level::Manager::OnPlatformActivated(const Event::PlatformActivated platform
     prevPlatformGrid = platform.position.grid;
 };
 
+void Level::Manager::Clear()
+{
+    map.clear();
+    pathFinding.generator.clearCollisions();
+    enemies.clear();
+};
+
 void Level::Manager::Update()
 {
     for (int x = 0; x < map.size(); ++x)

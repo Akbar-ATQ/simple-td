@@ -35,6 +35,8 @@ namespace Level
 
         void OnPlatformActivated(const Event::PlatformActivated platform);
 
+        void Clear();
+
         void Update();
 
         void Draw();

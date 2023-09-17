@@ -47,7 +47,7 @@ namespace Level
         void EditLevel();
         void SaveLevel();
 
-        void Update();
+        void UpdateAndDraw();
 
     private:
         LevelData levelData;
