@@ -20,6 +20,7 @@ namespace Level
         Manager()
         {
             listener = Event::Signal::Create(this);
+            listener->Connect<Event::PlatformActivated, Level::Manager>(Event::PlatformActivated(), &Level::Manager::OnPlatformActivated);
         };
         ~Manager() = default;
 
