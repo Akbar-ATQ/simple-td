@@ -1,6 +1,7 @@
 #include "update_unit.hpp"
 
 #include "grid_helper.hpp"
+#include "event_list.hpp"
 
 void UpdateEnemies(Grid &grid, Level::Manager &level)
 {
@@ -61,6 +62,9 @@ void UpdateTower(Grid &grid, Level::Manager &level)
 
     std::shared_ptr<Tower> tower = grid.GetTerrain<Platform>()->GetTower();
 
+    tower->LevelUp();
+
+    // ---------- Detect and shoot enemies ---------- //
     std::vector<std::shared_ptr<Enemy>> enemiesInRange;
 
     auto addEnemyToRange = [&enemiesInRange, &level](const int x, const int y)
@@ -179,7 +183,10 @@ void HandleCollision(Grid &grid, Level::Manager &level)
             {
                 if (CheckCollisionPointRec(GH::MergeReal(bullet->position).CastVec2Ray(), lockedEnemy->GetRec()))
                 {
-                    lockedEnemy->TakeDamage(bullet->damage);
+                    // bullet->ReceiveExp(lockedEnemy->TakeDamage(bullet->damage));
+                    Event::HitEnemy hitEnemy;
+                    hitEnemy.exp = lockedEnemy->TakeDamage(bullet->damage);
+                    bullet->event->Emit(hitEnemy);
                     removedBullets.push_back(bullet);
                 }
             }

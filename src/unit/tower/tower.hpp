@@ -5,6 +5,8 @@
 #include "global_data.hpp"
 #include "enemy.hpp"
 #include "bullet.hpp"
+#include "event_signal.hpp"
+#include "event_list.hpp"
 
 #include "raylib.h"
 
@@ -14,10 +16,24 @@
 class Tower : public Entity
 {
 public:
-    Tower(Vec2i gridPos, Vec2f localPos) : Entity{Position{gridPos, localPos}, GRID_SIZE, GREEN} {};
+    Tower(Vec2i gridPos, Vec2f localPos) : Entity{Position{gridPos, localPos}, GRID_SIZE, GREEN}
+    {
+        listener = Event::Signal::Create(this);
+        listener->Connect<Event::HitEnemy, Tower>(Event::HitEnemy(), &Tower::OnHitEnemy);
+    };
     ~Tower() = default;
 
     const Vec2f center {GRID_SIZE / 2, GRID_SIZE / 2};
+
+    enum class Stat
+    {
+        LEVEL,
+        EXP,
+        DMG,
+        RANGE,
+        ATK_SPD,
+        PROJECTILE_SPD,
+    };
 
     // ---------- Stats ---------- //
     float bulletDamage {1};
@@ -32,12 +48,17 @@ public:
     void SelectTarget(std::vector<std::shared_ptr<Enemy>> enemiesInRange);
     void Shoot(std::vector<std::shared_ptr<Enemy>> enemiesInRange);
 
-    std::vector<std::shared_ptr<Bullet>> GetBullets();
+    std::shared_ptr<Event::Signal> listener;
+    void OnHitEnemy(Event::HitEnemy hitEnemy);
 
-    void Upgrade();
+    void LevelUp();
 
-    void DrawStat(std::string text, float stat, int &order);
+    void Upgrade(Stat stat, float &value, int order, int textSize);
+
+    void DrawStat(std::string text, const float value, int &order, const int textSize);
     void StatusPanel();
+
+    std::vector<std::shared_ptr<Bullet>> GetBullets();
 
     void MoveBullets(std::vector<std::shared_ptr<Bullet>> &otherBullets);
 
@@ -52,6 +73,12 @@ private:
     std::vector<std::shared_ptr<Bullet>> bullets;
 
     float attackTimer {0.0f};
+
+    int level {1};
+    int exp {0};
+    int nextLevelExp {100};
+
+    int upgradeNum {0};
 };
 
 #endif

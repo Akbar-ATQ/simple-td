@@ -7,9 +7,14 @@ Vec2f Enemy::GetCenter()
     return {position.local.x + (size / 2), position.local.y + (size / 2)};
 };
 
-void Enemy::TakeDamage(int damage)
+int Enemy::TakeDamage(int damage)
 {
+    float percent = (static_cast<float>(damage) / static_cast<float>(defaultHP));
     hp -= damage;
+
+    int expTaken = static_cast<int>(static_cast<float>(expPool) * percent);
+
+    return expTaken;
 };
 
 int Enemy::GetHP()

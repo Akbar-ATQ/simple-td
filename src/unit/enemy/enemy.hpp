@@ -17,7 +17,8 @@ public:
 
     Vec2f GetCenter();
 
-    void TakeDamage(int damage);
+    // Return exp.
+    int TakeDamage(int damage);
     int GetHP();
 
     void Move();
@@ -33,7 +34,9 @@ private:
     Path path;
 
     int hp {5};
+    const int defaultHP {hp};
     float speed {55};
+    int expPool {10};
 };
 
 #endif

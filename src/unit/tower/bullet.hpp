@@ -4,6 +4,7 @@
 #include "entity.hpp"
 #include "enemy.hpp"
 #include "global_data.hpp"
+#include "event_signal.hpp"
 
 #include <memory>
 
@@ -23,7 +24,7 @@ public:
     float damage {0};
     // ---------------------------- //
 
-    // std::shared_ptr<Event::Signal> hittingEnemy // When hitting enemy, take exp and give it to tower
+    std::shared_ptr<Event::Manager> event = Event::Manager::Create();
 
     void Draw();
 

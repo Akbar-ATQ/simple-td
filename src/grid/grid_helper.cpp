@@ -46,6 +46,16 @@ void GH::DrawCircLines(const Vec2f v, const float radius, const Color color)
     DrawCircleLines(v.x * GRID_SIZE, v.y * GRID_SIZE, radius * GRID_SIZE, color);
 };
 
+void GH::DrawTriangleInCenter(const Vec2i gridPos, float size, const Color color)
+{
+    Vector2 realPos = RealPosition(gridPos).CastVec2Ray();
+    float halfGrid = GRID_SIZE / 2;
+    Vector2 v1 {(realPos.x + halfGrid), (realPos.y + halfGrid) - size};
+    Vector2 v2 {(realPos.x + halfGrid) - size, (realPos.y + halfGrid) + size};
+    Vector2 v3 {(realPos.x + halfGrid) + size, (realPos.y + halfGrid) + size};
+    DrawTriangle(v1, v2, v3, color);
+};
+
 // Turn real position into grid position.
 Vec2i GH::GridPosition(const Vec2f v)
 {
@@ -65,6 +75,11 @@ int GH::GridPosition(const float pos)
 Vec2f GH::RealPosition(const Vec2f v)
 {
     return {(v.x * GRID_SIZE), (v.y * GRID_SIZE)};
+};
+
+Vec2f GH::RealPosition(const Vec2i v)
+{
+    return {static_cast<float>(v.x * GRID_SIZE), static_cast<float>(v.y * GRID_SIZE)};
 };
 
 float GH::RealPosition(const float pos)

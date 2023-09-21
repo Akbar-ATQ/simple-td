@@ -21,6 +21,13 @@ namespace Event
 
         Position position;
     };
+
+    struct HitEnemy : public EventType
+    {
+        HitEnemy() : EventType{"HitEnemy"} {};
+
+        int exp;
+    };
 }
 
 #endif

@@ -13,6 +13,7 @@ namespace GH
     void DrawRecInCenter(const Rectangle rec, const Color color);
     void DrawCirc(const Vec2f v, const float radius, const Color color);
     void DrawCircLines(const Vec2f v, const float radius, const Color color);
+    void DrawTriangleInCenter(const Vec2i gridPos, float size, const Color color);
 
     // Turn real position into grid position.
     Vec2i GridPosition(const Vec2f v);
@@ -20,6 +21,7 @@ namespace GH
     int GridPosition(const float pos);
 
     Vec2f RealPosition(const Vec2f v);
+    Vec2f RealPosition(const Vec2i v);
     float RealPosition(const float pos);
 
     // The result is the digit represent grid position and fraction represent local position in percentage,
