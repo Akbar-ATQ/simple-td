@@ -13,42 +13,39 @@
 
 Mode mode {MAIN_MENU};
 
+void SelectLevel(int &order, bool &isLoadLevel, std::string &levelName, std::string name)
+{
+    Rectangle levelButton {
+        static_cast<float>(8 * GRID_SIZE),
+        static_cast<float>(order * GRID_SIZE),
+        static_cast<float>(4 * GRID_SIZE),
+        static_cast<float>(GRID_SIZE)
+    };
+
+    if (GuiButton(levelButton, name.c_str()))
+    {
+        levelName = name;
+        isLoadLevel = true;
+    }
+
+    order += 1;
+};
+
 void MainMenu(Level::Manager &level, std::string &levelPath)
 {
-    bool isPlaying {false};
+    bool isLoadLevel {false};
     std::string levelName;
+    int order {2}; // Where the level button in y axis.
 
-    Rectangle level1Button {
-        static_cast<float>(8 * GRID_SIZE),
-        static_cast<float>(2 * GRID_SIZE),
-        static_cast<float>(4 * GRID_SIZE),
-        static_cast<float>(GRID_SIZE)
-    };
+    SelectLevel(order, isLoadLevel, levelName, "LEVEL 1");
+    SelectLevel(order, isLoadLevel, levelName, "LEVEL 2");
 
-    if (GuiButton(level1Button, "LEVEL 1"))
-    {
-        levelName = "level1.map";
-        isPlaying = true;
-    }
-
-    Rectangle level2Button {
-        static_cast<float>(8 * GRID_SIZE),
-        static_cast<float>(3 * GRID_SIZE),
-        static_cast<float>(4 * GRID_SIZE),
-        static_cast<float>(GRID_SIZE)
-    };
-
-    if (GuiButton(level2Button, "LEVEL 2"))
-    {
-        levelName = "level2.map";
-        isPlaying = true;
-    }
-
-    if (isPlaying)
+    if (isLoadLevel)
     {
         std::string levelFile;
         levelFile.append(levelPath);
         levelFile.append(levelName);
+        levelFile.append(".map");
 
         LevelData levelData;
         Level::Loader(levelFile, levelData);
