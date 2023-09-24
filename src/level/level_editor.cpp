@@ -14,7 +14,9 @@ void Level::Editor::EditLevel()
     {
         selectedGrid = GH::GridPosition(GetMousePosition());
 
-        levelData[selectedGrid.x][selectedGrid.y] = terrain;
+        // To prevent selecting grid in side panel.
+        if (selectedGrid.x < (levelData.size() - 3))
+            levelData[selectedGrid.x][selectedGrid.y] = terrain;
     }
 
     if (IsKeyPressed(KEY_ZERO))
