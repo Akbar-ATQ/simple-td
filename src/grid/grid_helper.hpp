@@ -37,8 +37,6 @@ namespace GH
     bool ClickGrid(const Vec2i gridPos);
 
     bool CollisionRecGrid(const Rectangle rec, const Vec2i gridPos);
-    bool CollisionCircleRec(const Vec2f circleCenter, const float circleRadius, const Rectangle rectangle);
-    bool CollisionLineRec(Vec2f p1, Vec2f p2, Rectangle rec);
 }
 
 #endif
