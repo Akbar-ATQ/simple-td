@@ -47,8 +47,7 @@ void MainMenu(Level::Manager &level, std::string &levelPath)
         levelFile.append(levelName);
         levelFile.append(".map");
 
-        LevelData levelData;
-        Level::Loader(levelFile, levelData);
+        LevelData levelData = Level::Loader(levelFile);
         level.GenerateLevel(levelData);
 
         mode = PLAY;

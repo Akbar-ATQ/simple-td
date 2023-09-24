@@ -7,7 +7,7 @@
 
 namespace Level
 {
-    void Loader(const std::string &levelPath, LevelData &levelData);
+    LevelData Loader(const std::string &levelPath);
 };
 
 #endif

@@ -2,8 +2,10 @@
 
 #include <fstream>
 
-void Level::Loader(const std::string &levelPath, LevelData &levelData)
+LevelData Level::Loader(const std::string &levelPath)
 {
+    LevelData levelData;
+
     std::ifstream levelFile(levelPath, std::ios::binary);
     if (levelFile.is_open())
     {
@@ -21,4 +23,6 @@ void Level::Loader(const std::string &levelPath, LevelData &levelData)
 
         levelFile.close();
     }
+
+    return levelData;
 };
