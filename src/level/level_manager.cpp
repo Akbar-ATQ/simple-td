@@ -81,7 +81,8 @@ void Level::Manager::OnPlatformActivated(const Event::PlatformActivated platform
 {
     static Vec2i prevPlatformGrid {platform.position.grid};
 
-    if (prevPlatformGrid != platform.position.grid)
+    if (std::holds_alternative<std::shared_ptr<Platform>>(map[prevPlatformGrid.x][prevPlatformGrid.y]->terrain)
+        && prevPlatformGrid != platform.position.grid)
     {
         map[prevPlatformGrid.x][prevPlatformGrid.y]->GetTerrain<Platform>()->Deactivate();
     }
